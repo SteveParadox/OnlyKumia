@@ -20,7 +20,7 @@ import MicrosoftIcon from '@mui/icons-material/Microsoft';
 import { createTheme, ThemeProvider } from '@mui/material/styles';
 
 import { signInWithPopup } from 'firebase/auth';
-import { FirebaseAuth, provider } from './Firebase';
+import { FirebaseAuth, provider } from './Firebase.js';
 import MicrosoftLogin from './MicrosoftLogin';
 import { useAuth } from './Auth';
 import { useNavigate, useLocation, Link as RouterLink } from 'react-router-dom';
@@ -93,7 +93,6 @@ const Login = () => {
       else if (err.response?.status === 400) setErrMsg('Missing Username or Password');
       else if (err.response?.status === 401) setErrMsg('Unauthorized');
       else setErrMsg('Login Failed');
-      if (errRef.current) errRef.current.focus();
     }
   };
 

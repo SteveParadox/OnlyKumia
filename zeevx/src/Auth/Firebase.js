@@ -16,7 +16,7 @@ const firebaseConfig = {
 
 
 const App = initializeApp(firebaseConfig);
-const analytics = getAnalytics(App);
+// const analytics = getAnalytics(App);
 const FirebaseAuth = getAuth(App);
 const provider = new GoogleAuthProvider();
 const storage = getStorage(App);
