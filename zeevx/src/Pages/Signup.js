@@ -82,7 +82,7 @@ const Signup = () => {
 
     try {
       const response = await axios.post(
-        '/signUp',
+        '/auth/signUp',
         { email, password, gender, country },
         { headers: { 'Content-Type': 'application/json' }, withCredentials: true }
       );

@@ -133,7 +133,7 @@ function Upload() {
 
     const fetchData = async () => {
       try {
-        const response = await axios.get(`/user/${auth.uid}/images`);
+        const response = await axios.get(`/uploads/user/${auth.uid}/images`);
         // expect response.data to be array of { id, name, imgUrl, status }
         setImages(response.data || []);
       } catch (error) {

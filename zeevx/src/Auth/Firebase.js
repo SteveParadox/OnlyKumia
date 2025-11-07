@@ -5,14 +5,15 @@ import { getAnalytics } from "firebase/analytics";
 import { getStorage } from 'firebase/storage';
 
 const firebaseConfig = {
-  apiKey: "AIzaSyAbqT36SYzz1JqKRy-ERma5GMBuUN3OGtY",
-  authDomain: "training-263022.firebaseapp.com",
-  projectId: "training-263022",
-  storageBucket: "training-263022.appspot.com",
-  messagingSenderId: "686365316167",
-  appId: "1:686365316167:web:4396a46f6d8ed957864d62",
-  measurementId: "G-H80MNH4ZT4"
+  apiKey: "AIzaSyAR1J45p0ePpVqZzz93X7JGiSRy-1Seryg",
+  authDomain: "onlykumia.firebaseapp.com",
+  projectId: "onlykumia",
+  storageBucket: "onlykumia.firebasestorage.app",
+  messagingSenderId: "674830747175",
+  appId: "1:674830747175:web:b7e28ee399d40ec6ef7002",
+  measurementId: "G-M283T6N2W7"
 };
+
 
 const App = initializeApp(firebaseConfig);
 const analytics = getAnalytics(App);

@@ -8,6 +8,7 @@ import cors from "cors"
 import corsOptions from './corsConfig.js';
 
 import googleLoginRouter from './Routes/Login.js';
+import signUpRouter from './Routes/SignUp.js';
 import CardRouter from './Routes/Cards.js';
 import UploadRouter from './Routes/dataUpload.js';
 import User from './DB/User.js';
@@ -68,6 +69,7 @@ send(
 ));
 
 app.use('/auth', googleLoginRouter);
+app.use('/auth', signUpRouter);
 app.use('/cards', CardRouter);
 app.use('/uploads', UploadRouter);
 app.use('/moderation', moderationRouter);

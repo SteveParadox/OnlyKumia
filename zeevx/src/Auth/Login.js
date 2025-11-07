@@ -69,15 +69,16 @@ const Login = () => {
     e.preventDefault();
     try {
       const response = await axios.post(
-        'http://localhost:8001/login',
-        JSON.stringify({ user, pwd }),
+        '/auth/login',
+        { email: user, password: pwd },
         {
           headers: { 'Content-Type': 'application/json' },
           withCredentials: true,
         }
       );
 
-      const { accessToken, roles, role } = response?.data || {};
+      const { data } = response || {};
+      const { accessToken, roles, role } = data || {};
       setAuth({ user, roles, accessToken });
 
       setUser('');
@@ -105,7 +106,7 @@ const Login = () => {
       const user = result.user;
       const idToken = await user.getIdToken();
 
-      const response = await fetch('http://localhost:8001/auth/google-login', {
+      const response = await fetch('/auth/google-login', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
