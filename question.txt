@@ -1,0 +1,173 @@
+modify this homepage to how you think the app interface should look like, including the write ups and other things .. and i already like this styling css so try not to do much changes, thanks
+
+import { Container, Typography, Button, Grid, Card, CardContent } from '@mui/material';
+import { Link } from 'react-router-dom';
+import { motion } from 'framer-motion';
+import StarIcon from '@mui/icons-material/Star';
+import TaskAltIcon from '@mui/icons-material/TaskAlt';
+import SpeedIcon from '@mui/icons-material/Speed';
+import LockIcon from '@mui/icons-material/Lock';
+import TwitterIcon from '@mui/icons-material/Twitter';
+import GitHubIcon from '@mui/icons-material/GitHub';
+import LinkedInIcon from '@mui/icons-material/LinkedIn';
+import useAuth from "../Hooks/useAuth";
+import "../Css/LandingPage.css";
+
+const LandingPage = () => {
+  const { auth } = useAuth();
+
+  return (
+    <div className="App landing-root">
+
+      {/* NAVIGATION */}
+      <nav className="nav-bar">
+        <div className="container">
+          <Link className="logo-nav" to="/">
+            Only<span>Kumia</span>
+          </Link>
+          <ul className="nav-links">
+            <li><a href="#features">Features</a></li>
+            <li><a href="#reviews">Reviews</a></li>
+            <li><a href="#about">About</a></li>
+            <li>
+              {auth ? (
+                <Link to="/home" className="go-premium-cta">Welcome, {auth.displayName}!</Link>
+              ) : (
+                <Link to="/login" className="go-premium-cta">Login</Link>
+              )}
+            </li>
+          </ul>
+        </div>
+      </nav>
+
+      {/* HERO SECTION */}
+      <section className="hero">
+        <Container>
+          <motion.div
+            initial={{ opacity: 0, y: 40 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 1 }}
+            className="hero-content"
+          >
+            <Typography variant="h3" className="hero-title">
+              A Task App That Doesn’t Stink
+            </Typography>
+            <Typography variant="subtitle1" className="hero-sub">
+              Organize. Focus. Conquer your chaos.
+            </Typography>
+            <div className="hero-buttons">
+              <Button
+                variant="contained"
+                color="primary"
+                component={Link}
+                to="/signUp"
+                className="glow-btn"
+              >
+                Try for Free
+              </Button>
+              <Button
+                variant="outlined"
+                color="inherit"
+                component={Link}
+                to="/login"
+                className="ghost-btn"
+              >
+                Login
+              </Button>
+            </div>
+          </motion.div>
+        </Container>
+      </section>
+
+      {/* FEATURE SECTION */}
+      <section id="features" className="features-section">
+        <Container>
+          <Typography variant="h4" align="center" gutterBottom>
+            Why You'll Love ZeeVX
+          </Typography>
+          <Grid container spacing={4} justifyContent="center" sx={{ mt: 2 }}>
+            {[
+              { icon: <TaskAltIcon />, title: "Smart Tasking", desc: "Auto-prioritize your tasks with intelligent sorting." },
+              { icon: <SpeedIcon />, title: "Lightning Fast", desc: "Built for performance, no lag, no nonsense." },
+              { icon: <LockIcon />, title: "Secure Sync", desc: "Your data is encrypted and synced across all devices." },
+              { icon: <StarIcon />, title: "Customizable", desc: "Dark mode, custom themes, and widgets galore." },
+            ].map((feature, index) => (
+              <Grid item xs={12} sm={6} md={3} key={index}>
+                <motion.div whileHover={{ scale: 1.05 }}>
+                  <Card className="feature-card">
+                    <CardContent>
+                      <div className="feature-icon">{feature.icon}</div>
+                      <Typography variant="h6">{feature.title}</Typography>
+                      <Typography variant="body2">{feature.desc}</Typography>
+                    </CardContent>
+                  </Card>
+                </motion.div>
+              </Grid>
+            ))}
+          </Grid>
+        </Container>
+      </section>
+
+      {/* TESTIMONIALS */}
+      <section id="reviews" className="testimonials-section">
+        <Container>
+          <Typography variant="h4" align="center" gutterBottom>
+            What People Are Saying
+          </Typography>
+          <div className="testimonial-list">
+            {[
+              { name: "Sergio de Paula", quote: "ZeeVX turned my chaos into calm. A total game-changer." },
+              { name: "Craig McKay", quote: "Simple, intuitive, and oddly satisfying to use." },
+              { name: "Jane Doe", quote: "This app made me actually like productivity. That’s saying something." },
+            ].map((item, i) => (
+              <motion.div
+                key={i}
+                className="testimonial-card"
+                whileHover={{ scale: 1.02 }}
+                transition={{ duration: 0.3 }}
+              >
+                <blockquote>"{item.quote}"</blockquote>
+                <cite>— {item.name}</cite>
+              </motion.div>
+            ))}
+          </div>
+        </Container>
+      </section>
+
+      {/* CTA SECTION */}
+      <section className="cta-section">
+        <Container>
+          <Typography variant="h4" gutterBottom>
+            Ready to Level Up Your Productivity?
+          </Typography>
+          <Button
+            variant="contained"
+            color="secondary"
+            size="large"
+            component={Link}
+            to="/signUp"
+            className="glow-btn"
+          >
+            Join ZeeVX Now
+          </Button>
+        </Container>
+      </section>
+
+      {/* FOOTER */}
+      <footer className="footer">
+        <Container className="footer-content">
+          <Typography variant="body2" align="center">
+            © {new Date().getFullYear()} ZeeVX. All rights reserved.
+          </Typography>
+          <div className="socials">
+            <a href="#"><TwitterIcon /></a>
+            <a href="#"><GitHubIcon /></a>
+            <a href="#"><LinkedInIcon /></a>
+          </div>
+        </Container>
+      </footer>
+    </div>
+  );
+};
+
+export default LandingPage;

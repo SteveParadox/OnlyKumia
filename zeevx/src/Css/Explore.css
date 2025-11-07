@@ -1,0 +1,218 @@
+
+@import url("https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap");
+
+:root {
+  --bg-dark: #0b0c0f;
+  --bg-card: #141519;
+  --bg-glass: rgba(255, 255, 255, 0.05);
+  --accent: #00d4ff;
+  --accent-soft: rgba(0, 212, 255, 0.3);
+  --text-main: #f5f5f5;
+  --text-muted: #9da1a7;
+  --border: #1f2024;
+  --radius: 16px;
+}
+
+/* ---------- BASE ---------- */
+body {
+  background: var(--bg-dark);
+  color: var(--text-main);
+  font-family: "Inter", sans-serif;
+  margin: 0;
+  overflow-x: hidden;
+}
+
+.discover-page {
+  background: linear-gradient(160deg, #0b0c0f 0%, #13141a 100%);
+  min-height: 100vh;
+  padding: 4rem 2rem;
+  position: relative;
+}
+
+/* ---------- HEADER ---------- */
+.discover-page h1 {
+  font-size: 2.6rem;
+  font-weight: 700;
+  background: linear-gradient(90deg, var(--accent), #0075ff);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  letter-spacing: 0.8px;
+}
+
+.discover-page input,
+.discover-page select {
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  color: var(--text-main);
+  border-radius: var(--radius);
+  padding: 0.8rem 1rem;
+  font-size: 0.95rem;
+  outline: none;
+  transition: all 0.3s ease;
+}
+
+.discover-page input:focus,
+.discover-page select:focus {
+  border-color: var(--accent);
+  box-shadow: 0 0 0 3px var(--accent-soft);
+}
+
+.discover-page .filter-bar {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1rem;
+  align-items: center;
+  justify-content: flex-end;
+}
+
+.header-row {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+  margin-bottom: 3rem;
+}
+
+@media (min-width: 640px) {
+  .header-row {
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center;
+  }
+}
+
+/* ---------- CREATOR GRID ---------- */
+.creator-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  gap: 2rem;
+}
+
+.creator-card {
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  overflow: hidden;
+  position: relative;
+  transition: all 0.3s ease;
+}
+
+.creator-card:hover {
+  transform: translateY(-8px);
+  border-color: var(--accent);
+  box-shadow: 0 8px 20px rgba(0, 212, 255, 0.1);
+}
+
+.creator-card img {
+  width: 100%;
+  height: 200px;
+  object-fit: cover;
+  opacity: 0.9;
+  transition: opacity 0.3s ease;
+}
+
+.creator-card:hover img {
+  opacity: 1;
+}
+
+.creator-badge {
+  position: absolute;
+  top: 12px;
+  left: 12px;
+  background: linear-gradient(90deg, var(--accent), #0075ff);
+  color: white;
+  font-size: 0.7rem;
+  font-weight: 600;
+  padding: 4px 10px;
+  border-radius: 999px;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.creator-content {
+  padding: 1.2rem;
+}
+
+.creator-content h3 {
+  font-size: 1.1rem;
+  margin: 0 0 6px;
+  font-weight: 600;
+}
+
+.creator-content p {
+  font-size: 0.85rem;
+  color: var(--text-muted);
+  margin-bottom: 1rem;
+}
+
+/* ---------- BUTTONS ---------- */
+.creator-actions {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.subscribe-btn {
+  background: linear-gradient(90deg, var(--accent), #0075ff);
+  border: none;
+  color: white;
+  padding: 0.5rem 1.2rem;
+  border-radius: 10px;
+  font-weight: 600;
+  font-size: 0.85rem;
+  cursor: pointer;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.subscribe-btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 0 18px rgba(0, 212, 255, 0.3);
+}
+
+.price-tag {
+  color: var(--text-muted);
+  font-size: 0.85rem;
+}
+
+/* ---------- LOAD MORE ---------- */
+.load-more {
+  text-align: center;
+  margin-top: 3rem;
+}
+
+.load-more button {
+  background: transparent;
+  color: var(--accent);
+  border: 1px solid var(--accent);
+  padding: 0.7rem 2rem;
+  border-radius: 999px;
+  font-weight: 600;
+  font-size: 0.9rem;
+  transition: all 0.3s ease;
+  cursor: pointer;
+}
+
+.load-more button:hover {
+  background: var(--accent);
+  color: #0b0c0f;
+  box-shadow: 0 0 20px var(--accent-soft);
+}
+
+/* ---------- ANIMATED BACKDROP ---------- */
+.discover-page::before {
+  content: "";
+  position: absolute;
+  top: -200px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 600px;
+  height: 600px;
+  background: radial-gradient(circle, rgba(0, 212, 255, 0.12), transparent 70%);
+  filter: blur(100px);
+  z-index: 0;
+  pointer-events: none;
+}
+
+.discover-page > * {
+  position: relative;
+  z-index: 2;
+}

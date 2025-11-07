@@ -1,0 +1,29 @@
+.header {
+    display: flex;
+    align-items: center;
+    justify-content: space-evenly;
+    z-index: 100;
+    border-bottom: 1px solid #f9f9f9;
+    background: linear-gradient(to right, #b4d7f8, #fae0e0);
+}
+
+
+
+.header__logo {
+    object-fit: contain;
+    height: 30px;
+
+}
+
+.header__icon {
+    padding: 20px;
+    color: lavender;
+}
+
+.header__profile-img {
+    height: 30px;
+    width: 30px; 
+    object-fit: cover; 
+    border-radius: 50%; 
+    padding: 20px;
+  }

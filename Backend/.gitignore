@@ -1,0 +1,4 @@
+# Ignore private keys and env
+Keys/serviceAccountKey.json
+.env
+.env.local
