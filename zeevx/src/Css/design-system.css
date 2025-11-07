@@ -1,0 +1,61 @@
+/* design-system.css
+   Centralized design tokens and small reset for Zeevx frontend
+   - CSS variables (colors, spacing, typographic scale)
+   - Minimal reset and utility classes
+   Keeps changes low-risk and backwards-compatible.
+*/
+
+/* ----------------- RESET ----------------- */
+/* box-sizing and sensible defaults */
+:root{
+  --color-primary: #0066ff;
+  --color-accent: #00bcd4;
+  --color-secondary: #0f1724;
+  --color-muted: #6b7280;
+  --bg: #ffffff;
+  --surface: #f7f8fa;
+  --text: #0b1220;
+  --text-inverse: #ffffff;
+  --success: #16a34a;
+  --danger: #ef4444;
+  --radius: 8px;
+  --radius-sm: 6px;
+  --spacing-xs: 4px;
+  --spacing-sm: 8px;
+  --spacing-md: 16px;
+  --spacing-lg: 24px;
+  --container-width: 1100px;
+}
+
+*,*::before,*::after{box-sizing:border-box}
+html,body,#root{height:100%;}
+html,body{margin:0;padding:0;font-family:Inter, system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, "Noto Sans", "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol";color:var(--text);background:var(--bg);}
+
+img{max-width:100%;display:block}
+a{text-decoration:none;color:inherit}
+button{font-family:inherit}
+
+/* ----------------- LAYOUT UTILITIES ----------------- */
+.container{width:100%;max-width:var(--container-width);margin:0 auto;padding:0 var(--spacing-md)}
+.center{display:flex;align-items:center;justify-content:center}
+.stack{display:flex;flex-direction:column;gap:var(--spacing-md)}
+
+/* ----------------- BUTTONS ----------------- */
+.btn{display:inline-flex;align-items:center;gap:8px;padding:10px 14px;border-radius:var(--radius-sm);border:0;cursor:pointer;background:var(--color-primary);color:var(--text-inverse);transition:transform .12s ease, box-shadow .12s ease}
+.btn:active{transform:translateY(1px)}
+.btn.secondary{background:transparent;border:1px solid var(--surface);color:var(--text)}
+
+/* ----------------- CARD ----------------- */
+.card{background:var(--surface);border-radius:var(--radius);padding:var(--spacing-md);box-shadow:0 6px 18px rgba(12,18,28,0.06)}
+
+/* ----------------- TYPOGRAPHY SCALE ----------------- */
+.heading-1{font-size:clamp(1.6rem, 4vw, 2.4rem);font-weight:700}
+.heading-2{font-size:clamp(1.25rem, 3.2vw, 1.6rem);font-weight:700}
+.muted{color:var(--color-muted)}
+
+/* small responsive helpers */
+@media (max-width:768px){
+  :root{--container-width:92vw}
+}
+
+/* end design-system.css */

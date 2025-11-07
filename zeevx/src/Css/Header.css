@@ -5,25 +5,43 @@
     z-index: 100;
     border-bottom: 1px solid #f9f9f9;
     background: linear-gradient(to right, #b4d7f8, #fae0e0);
+    gap: 12px;
+    padding: 8px 16px;
+    position: sticky;
+    top: 0;
+    background: var(--surface);
+    border-bottom: 1px solid rgba(12,18,28,0.04);
+    box-shadow: 0 4px 16px rgba(12,18,28,0.04);
 }
-
-
 
 .header__logo {
     object-fit: contain;
-    height: 30px;
-
+    height: 36px;
 }
 
+/* icons inside header - use token colors */
 .header__icon {
-    padding: 20px;
-    color: lavender;
+    padding: 8px;
+    color: var(--color-primary);
 }
 
 .header__profile-img {
-    height: 30px;
-    width: 30px; 
-    object-fit: cover; 
-    border-radius: 50%; 
-    padding: 20px;
-  }
+    height: 36px;
+    width: 36px;
+    object-fit: cover;
+    border-radius: 50%;
+}
+
+@media (max-width: 640px){
+    .header {
+        padding: 8px 12px;
+        gap: 8px;
+    }
+    .header__logo {
+        height: 30px;
+    }
+    .header__profile-img {
+        height: 30px;
+        width: 30px;
+    }
+}
