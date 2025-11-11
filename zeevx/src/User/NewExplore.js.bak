@@ -1,0 +1,753 @@
+import React, { useState, useEffect, useCallback, useRef } from 'react';import React, { useState, useEffect, useCallback, useRef } from 'react';
+
+import { motion, AnimatePresence } from 'framer-motion';import { motion, AnimatePresence } from 'framer-motion';
+
+import axios from '../Utils/axios';import axios from '../Utils/axios';
+
+import { useAuth } from '../Auth/Auth';import { useAuth } from '../Auth/Auth';
+
+import { useLocation } from 'react-router-dom';import { useLocation } from 'react-router-dom';
+
+
+
+// Icons// Icons
+
+import SearchIcon from '@mui/icons-material/Search';import SearchIcon from '@mui/icons-material/Search';
+
+import FavoriteBorderIcon from '@mui/icons-material/FavoriteBorder';import FavoriteBorderIcon from '@mui/icons-material/FavoriteBorder';
+
+import FavoriteIcon from '@mui/icons-material/Favorite';import FavoriteIcon from '@mui/icons-material/Favorite';
+
+import BookmarkBorderIcon from '@mui/icons-material/BookmarkBorder';import BookmarkBorderIcon from '@mui/icons-material/BookmarkBorder';
+
+import BookmarkIcon from '@mui/icons-material/Bookmark';import BookmarkIcon from '@mui/icons-material/Bookmark';
+
+import PersonAddIcon from '@mui/icons-material/PersonAdd';import PersonAddIcon from '@mui/icons-material/PersonAdd';
+
+import VerifiedIcon from '@mui/icons-material/Verified';import VerifiedIcon from '@mui/icons-material/Verified';
+
+import ShareIcon from '@mui/icons-material/Share';import ShareIcon from '@mui/icons-material/Share';
+
+import PlayCircleIcon from '@mui/icons-material/PlayCircle';import PlayCircleIcon from '@mui/icons-material/PlayCircle';
+
+
+
+// Components// Components
+
+import LoginPrompt from '../Components/LoginPrompt';import LoginPrompt from '../Components/LoginPrompt';
+
+import PurchaseModal from '../Components/PurchaseModal';import PurchaseModal from '../Components/PurchaseModal';
+
+
+
+const CATEGORIES = [const CATEGORIES = [
+
+  { id: 'all', label: 'For You', icon: '🔥' },  { id: 'all', label: 'For You', icon: '🔥' },
+
+  { id: 'trending', label: 'Trending', icon: '📈' },  { id: 'trending', label: 'Trending', icon: '📈' },
+
+  { id: 'music', label: 'Music', icon: '🎵' },  { id: 'music', label: 'Music', icon: '🎵' },
+
+  { id: 'art', label: 'Art', icon: '🎨' },  { id: 'art', label: 'Art', icon: '🎨' },
+
+  { id: 'gaming', label: 'Gaming', icon: '🎮' },  { id: 'gaming', label: 'Gaming', icon: '🎮' },
+
+  { id: 'fitness', label: 'Fitness', icon: '💪' },  { id: 'fitness', label: 'Fitness', icon: '💪' },
+
+  { id: 'food', label: 'Food', icon: '🍳' },  { id: 'food', label: 'Food', icon: '🍳' },
+
+  { id: 'tech', label: 'Tech', icon: '💻' },  { id: 'tech', label: 'Tech', icon: '💻' },
+
+];];
+
+
+
+const ContentCard = ({ content, index, onLike, onSave, onFollow, onShare, onSubscribe }) => {const ContentCard = ({ content, index, onLike, onSave, onFollow, onShare }) => {
+
+  const [isHovered, setIsHovered] = useState(false);  const [isHovered, setIsHovered] = useState(false);
+
+
+
+  return (  return (
+
+    <motion.div     <motion.div 
+
+      className="content-card"      className="content-card"
+
+      initial={{ opacity: 0, y: 20 }}      initial={{ opacity: 0, y: 20 }}
+
+      animate={{ opacity: 1, y: 0 }}      animate={{ opacity: 1, y: 0 }}
+
+      transition={{ delay: index * 0.1 }}      transition={{ delay: index * 0.1 }}
+
+      onHoverStart={() => setIsHovered(true)}      onHoverStart={() => setIsHovered(true)}
+
+      onHoverEnd={() => setIsHovered(false)}      onHoverEnd={() => setIsHovered(false)}
+
+    >    >
+
+      <img       <img 
+
+        src={content.mediaUrl}         src={content.mediaUrl} 
+
+        alt={content.caption}        alt={content.caption}
+
+        className="content-img"        className="content-img"
+
+      />      />
+
+            
+
+      <div className="content-overlay" style={{ opacity: isHovered ? 1 : 0 }}>      <div className="content-overlay" style={{ opacity: isHovered ? 1 : 0 }}>
+
+        <div className="creator-info">        <div className="creator-info">
+
+          <img           <img 
+
+            src={content.creatorAvatar}             src={content.creatorAvatar} 
+
+            alt={content.creatorName}            alt={content.creatorName}
+
+            className="creator-avatar"            className="creator-avatar"
+
+          />          />
+
+          <div>          <div>
+
+            <h4 className="creator-name">            <h4 className="creator-name">
+
+              {content.creatorName}              {content.creatorName}
+
+              {content.verified && (              {content.verified && (
+
+                <VerifiedIcon className="verified-badge" fontSize="small" color="primary" />                <VerifiedIcon className="verified-badge" fontSize="small" />
+
+              )}              )}
+
+            </h4>            </h4>
+
+            <p className="creator-handle">@{content.creatorHandle}</p>            <p className="creator-handle">@{content.creatorHandle}</p>
+
+            {content.tags && (          </div>
+
+              <div className="creator-tags">        </div>
+
+                {content.tags.slice(0, 3).map((tag, i) => (
+
+                  <span key={i} className="tag">#{tag}</span>        <div className="engagement-stats">
+
+                ))}          <div className="stat-item">
+
+              </div>            <PlayCircleIcon /> {content.views}
+
+            )}          </div>
+
+          </div>          <div className="stat-item">
+
+        </div>            <FavoriteBorderIcon /> {content.likes}
+
+          </div>
+
+        <div className="content-details">        </div>
+
+          {content.price && (
+
+            <div className="subscription-info">        <div className="action-buttons">
+
+              <button          <button 
+
+                className="subscribe-btn"            className={\`action-btn \${content.isLiked ? 'liked' : ''}\`}
+
+                onClick={() => onSubscribe(content.id)}            onClick={() => onLike(content.id)}
+
+              >          >
+
+                Subscribe • ${content.price}/mo            {content.isLiked ? <FavoriteIcon /> : <FavoriteBorderIcon />}
+
+              </button>          </button>
+
+            </div>          <button 
+
+          )}            className={\`action-btn \${content.isSaved ? 'saved' : ''}\`}
+
+            onClick={() => onSave(content.id)}
+
+          <div className="engagement-stats">          >
+
+            <div className="stat-item">            {content.isSaved ? <BookmarkIcon /> : <BookmarkBorderIcon />}
+
+              <PlayCircleIcon /> {content.views}          </button>
+
+            </div>          <button 
+
+            <div className="stat-item">            className="action-btn"
+
+              <FavoriteBorderIcon /> {content.likes}            onClick={() => onShare(content.id)}
+
+            </div>          >
+
+            {content.verified && (            <ShareIcon />
+
+              <div className="stat-item verified-stat">          </button>
+
+                <VerifiedIcon fontSize="small" /> Verified Creator        </div>
+
+              </div>      </div>
+
+            )}    </motion.div>
+
+          </div>  );
+
+        </div>};
+
+
+
+        <div className="action-buttons">const NewExplore = () => {
+
+          <button  const { user, auth } = useAuth() || {};
+
+            className={'action-btn follow-btn ' + (content.following ? 'liked' : '')}  const location = useLocation();
+
+            onClick={() => onFollow(content.id)}  const [activeCategory, setActiveCategory] = useState('all');
+
+          >  const [query, setQuery] = useState('');
+
+            <PersonAddIcon />  const [content, setContent] = useState([]);
+
+          </button>  const [loading, setLoading] = useState(false);
+
+          <button   const [showLoginPrompt, setShowLoginPrompt] = useState(false);
+
+            className={'action-btn ' + (content.isLiked ? 'liked' : '')}  const [showPurchase, setShowPurchase] = useState(false);
+
+            onClick={() => onLike(content.id)}  const observerRef = useRef(null);
+
+          >  const [page, setPage] = useState(1);
+
+            {content.isLiked ? <FavoriteIcon /> : <FavoriteBorderIcon />}  const [hasMore, setHasMore] = useState(true);
+
+          </button>
+
+          <button   // Fetch content with category and search
+
+            className={'action-btn ' + (content.isSaved ? 'saved' : '')}  const fetchContent = useCallback(async (reset = false) => {
+
+            onClick={() => onSave(content.id)}    if (loading || (!hasMore && !reset)) return;
+
+          >    
+
+            {content.isSaved ? <BookmarkIcon /> : <BookmarkBorderIcon />}    setLoading(true);
+
+          </button>    try {
+
+          <button       const params = {
+
+            className="action-btn"        category: activeCategory === 'all' ? undefined : activeCategory,
+
+            onClick={() => onShare(content.id)}        q: query,
+
+          >        page: reset ? 1 : page
+
+            <ShareIcon />      };
+
+          </button>      
+
+        </div>      const res = await axios.get('/content', { params });
+
+      </div>      const newContent = res.data?.data || [];
+
+    </motion.div>      
+
+  );      if (reset) {
+
+};        setContent(newContent);
+
+        setPage(2);
+
+const NewExplore = () => {      } else {
+
+  const { user, auth } = useAuth() || {};        setContent(prev => [...prev, ...newContent]);
+
+  const location = useLocation();        setPage(prev => prev + 1);
+
+  const [activeCategory, setActiveCategory] = useState('all');      }
+
+  const [query, setQuery] = useState('');      
+
+  const [content, setContent] = useState([]);      setHasMore(newContent.length > 0);
+
+  const [loading, setLoading] = useState(false);    } catch (err) {
+
+  const [showLoginPrompt, setShowLoginPrompt] = useState(false);      console.warn('Error fetching content:', err);
+
+  const [showPurchase, setShowPurchase] = useState({ open: false, creatorId: null, price: null });      // Fallback to mock data in development
+
+  const observerRef = useRef(null);      const mockContent = generateMockContent(reset ? 1 : page);
+
+  const [page, setPage] = useState(1);      if (reset) {
+
+  const [hasMore, setHasMore] = useState(true);        setContent(mockContent);
+
+      } else {
+
+  // Fetch content with category and search        setContent(prev => [...prev, ...mockContent]);
+
+  const fetchContent = useCallback(async (reset = false) => {      }
+
+    if (loading || (!hasMore && !reset)) return;      setHasMore(false);
+
+        } finally {
+
+    setLoading(true);      setLoading(false);
+
+    try {    }
+
+      const params = {  }, [activeCategory, query, page, loading, hasMore]);
+
+        category: activeCategory === 'all' ? undefined : activeCategory,
+
+        q: query,  // Initialize infinite scroll observer
+
+        page: reset ? 1 : page  useEffect(() => {
+
+      };    const observer = new IntersectionObserver(
+
+            entries => {
+
+      const res = await axios.get('/content', { params });        if (entries[0].isIntersecting && hasMore && !loading) {
+
+      const newContent = res.data?.data || [];          fetchContent(false);
+
+              }
+
+      if (reset) {      },
+
+        setContent(newContent);      { rootMargin: '300px' }
+
+        setPage(2);    );
+
+      } else {
+
+        setContent(prev => [...prev, ...newContent]);    if (observerRef.current) {
+
+        setPage(prev => prev + 1);      observer.observe(observerRef.current);
+
+      }    }
+
+      
+
+      setHasMore(newContent.length > 0);    return () => observer.disconnect();
+
+    } catch (err) {  }, [hasMore, loading, fetchContent]);
+
+      console.warn('Error fetching content:', err);
+
+      // Fallback to mock data in development  // Debounced search
+
+      const mockContent = generateMockContent(reset ? 1 : page);  useEffect(() => {
+
+      if (reset) {    const timer = setTimeout(() => {
+
+        setContent(mockContent);      fetchContent(true);
+
+      } else {    }, 300);
+
+        setContent(prev => [...prev, ...mockContent]);
+
+      }    return () => clearTimeout(timer);
+
+      setHasMore(false);  }, [query, activeCategory]);
+
+    } finally {
+
+      setLoading(false);  // Content interaction handlers
+
+    }  const handleLike = async (contentId) => {
+
+  }, [activeCategory, query, page, loading, hasMore]);    if (!auth) {
+
+      setShowLoginPrompt(true);
+
+  // Initialize infinite scroll observer      return;
+
+  useEffect(() => {    }
+
+    const observer = new IntersectionObserver(
+
+      entries => {    setContent(prev =>
+
+        if (entries[0].isIntersecting && hasMore && !loading) {      prev.map(item =>
+
+          fetchContent(false);        item.id === contentId
+
+        }          ? { ...item, isLiked: !item.isLiked, likes: item.likes + (item.isLiked ? -1 : 1) }
+
+      },          : item
+
+      { rootMargin: '300px' }      )
+
+    );    );
+
+
+
+    if (observerRef.current) {    try {
+
+      observer.observe(observerRef.current);      await axios.post(\`/content/\${contentId}/like\`);
+
+    }    } catch (err) {
+
+      console.error('Like failed:', err);
+
+    return () => observer.disconnect();      // Revert on error
+
+  }, [hasMore, loading, fetchContent]);      setContent(prev =>
+
+        prev.map(item =>
+
+  // Debounced search          item.id === contentId
+
+  useEffect(() => {            ? { ...item, isLiked: !item.isLiked, likes: item.likes + (item.isLiked ? 1 : -1) }
+
+    const timer = setTimeout(() => {            : item
+
+      fetchContent(true);        )
+
+    }, 300);      );
+
+    }
+
+    return () => clearTimeout(timer);  };
+
+  }, [query, activeCategory]);
+
+  const handleSave = async (contentId) => {
+
+  // Content interaction handlers    if (!auth) {
+
+  const handleLike = async (contentId) => {      setShowLoginPrompt(true);
+
+    if (!auth) {      return;
+
+      setShowLoginPrompt(true);    }
+
+      return;
+
+    }    setContent(prev =>
+
+      prev.map(item =>
+
+    setContent(prev =>        item.id === contentId ? { ...item, isSaved: !item.isSaved } : item
+
+      prev.map(item =>      )
+
+        item.id === contentId    );
+
+          ? { ...item, isLiked: !item.isLiked, likes: item.likes + (item.isLiked ? -1 : 1) }
+
+          : item    try {
+
+      )      await axios.post(\`/content/\${contentId}/save\`);
+
+    );    } catch (err) {
+
+      console.error('Save failed:', err);
+
+    try {      setContent(prev =>
+
+      await axios.post('/content/' + contentId + '/like');        prev.map(item =>
+
+    } catch (err) {          item.id === contentId ? { ...item, isSaved: !item.isSaved } : item
+
+      console.error('Like failed:', err);        )
+
+      // Revert on error      );
+
+      setContent(prev =>    }
+
+        prev.map(item =>  };
+
+          item.id === contentId
+
+            ? { ...item, isLiked: !item.isLiked, likes: item.likes + (item.isLiked ? 1 : -1) }  const handleShare = (contentId) => {
+
+            : item    // Implement share functionality (modal, native share, etc.)
+
+        )    if (navigator.share) {
+
+      );      navigator.share({
+
+    }        title: 'Check out this content',
+
+  };        url: window.location.origin + '/content/' + contentId
+
+      });
+
+  const handleSave = async (contentId) => {    } else {
+
+    if (!auth) {      // Fallback to copy link
+
+      setShowLoginPrompt(true);      navigator.clipboard.writeText(window.location.origin + '/content/' + contentId);
+
+      return;      // Show toast notification
+
+    }    }
+
+  };
+
+    setContent(prev =>
+
+      prev.map(item =>  const handleSubscribe = async (contentId) => {
+
+        item.id === contentId ? { ...item, isSaved: !item.isSaved } : item    if (!auth) {
+
+      )      setShowLoginPrompt(true);
+
+    );      return;
+
+    }
+
+    try {
+
+      await axios.post('/content/' + contentId + '/save');    const contentItem = content.find(item => item.id === contentId);
+
+    } catch (err) {    if (contentItem) {
+
+      console.error('Save failed:', err);      setShowPurchase({
+
+      setContent(prev =>        open: true,
+
+        prev.map(item =>        creatorId: contentId,
+
+          item.id === contentId ? { ...item, isSaved: !item.isSaved } : item        price: contentItem.price
+
+        )      });
+
+      );    }
+
+    }  };  return (
+
+  };    <div className="explore-page">
+
+      {/* Category Pills */}
+
+  const handleShare = (contentId) => {      <div className="category-scroll">
+
+    // Implement share functionality (modal, native share, etc.)        <div className="category-pills">
+
+    if (navigator.share) {          {CATEGORIES.map(category => (
+
+      navigator.share({            <button
+
+        title: 'Check out this content',              key={category.id}
+
+        url: window.location.origin + '/content/' + contentId              className={\`category-pill \${activeCategory === category.id ? 'active' : ''}\`}
+
+      });              onClick={() => setActiveCategory(category.id)}
+
+    } else {            >
+
+      // Fallback to copy link              <span>{category.icon}</span> {category.label}
+
+      navigator.clipboard.writeText(window.location.origin + '/content/' + contentId);            </button>
+
+      // Show toast notification          ))}
+
+    }        </div>
+
+  };      </div>
+
+
+
+  const handleSubscribe = async (contentId) => {      {/* Search Bar */}
+
+    if (!auth) {      <div className="search-container">
+
+      setShowLoginPrompt(true);        <SearchIcon className="search-icon" />
+
+      return;        <input
+
+    }          type="text"
+
+          className="search-input"
+
+    const contentItem = content.find(item => item.id === contentId);          placeholder="Search creators, tags, or topics..."
+
+    if (contentItem) {          value={query}
+
+      setShowPurchase({          onChange={(e) => setQuery(e.target.value)}
+
+        open: true,        />
+
+        creatorId: contentId,      </div>
+
+        price: contentItem.price
+
+      });      {/* Content Grid */}
+
+    }      <div className="content-grid">
+
+  };        <AnimatePresence>
+
+          {content.map((item, index) => (
+
+  return (            <ContentCard
+
+    <div className="explore-page">              key={item.id}
+
+      {/* Category Pills */}              content={item}
+
+      <div className="category-scroll">              index={index}
+
+        <div className="category-pills">              onLike={handleLike}
+
+          {CATEGORIES.map(category => (              onSave={handleSave}
+
+            <button              onShare={handleShare}
+
+              key={category.id}              onFollow={handleFollow}
+
+              className={'category-pill ' + (activeCategory === category.id ? 'active' : '')}              onSubscribe={handleSubscribe}
+
+              onClick={() => setActiveCategory(category.id)}            />
+
+            >          ))}
+
+              <span>{category.icon}</span> {category.label}        </AnimatePresence>
+
+            </button>      </div>
+
+          ))}
+
+        </div>      {/* Loading State */}
+
+      </div>      {loading && (
+
+        <div className="loading-grid">
+
+      {/* Search Bar */}          {Array.from({ length: 6 }).map((_, i) => (
+
+      <div className="search-container">            <div key={i} className="skeleton-card" />
+
+        <SearchIcon className="search-icon" />          ))}
+
+        <input        </div>
+
+          type="text"      )}
+
+          className="search-input"
+
+          placeholder="Search creators, tags, or topics..."      {/* Infinite Scroll Trigger */}
+
+          value={query}      <div ref={observerRef} style={{ height: 20 }} />
+
+          onChange={(e) => setQuery(e.target.value)}
+
+        />      {/* Modals */}
+
+      </div>      <LoginPrompt
+
+        open={showLoginPrompt}
+
+      {/* Content Grid */}        onClose={() => setShowLoginPrompt(false)}
+
+      <div className="content-grid">        redirectTo={location.pathname}
+
+        <AnimatePresence>      />
+
+          {content.map((item, index) => (      
+
+            <ContentCard      <PurchaseModal
+
+              key={item.id}        open={showPurchase.open}
+
+              content={item}        onClose={() => setShowPurchase({ open: false })}
+
+              index={index}        userId={user?.uid}
+
+              onLike={handleLike}        creatorId={showPurchase.creatorId}
+
+              onSave={handleSave}      />
+
+              onShare={handleShare}    </div>
+
+              onFollow={handleSubscribe}  );
+
+              onSubscribe={handleSubscribe}};
+
+            />
+
+          ))}// Mock content generator for development
+
+        </AnimatePresence>const generateMockContent = (page) => {
+
+      </div>  return Array.from({ length: 12 }, (_, i) => ({
+
+    id: `${page}-${i}`,
+
+      {/* Loading State */}    mediaUrl: `https://picsum.photos/400/400?random=${page * 12 + i}`,
+
+      {loading && (    caption: 'Amazing content caption',
+
+        <div className="loading-grid">    creatorName: `Creator ${i + 1}`,
+
+          {Array.from({ length: 6 }).map((_, i) => (    creatorHandle: `creator${i + 1}`,
+
+            <div key={i} className="skeleton-card" />    creatorAvatar: `https://i.pravatar.cc/150?u=${i}`,
+
+          ))}    verified: i % 3 === 0,
+
+        </div>    views: Math.floor(Math.random() * 100000),
+
+      )}    likes: Math.floor(Math.random() * 10000),
+
+    isLiked: false,
+
+      {/* Infinite Scroll Trigger */}    isSaved: false,
+
+      <div ref={observerRef} style={{ height: 20 }} />    following: false,
+
+    price: i % 2 === 0 ? 9.99 : 4.99,
+
+      {/* Modals */}    tags: ['Lifestyle', 'Art', 'Photography'].slice(0, Math.floor(Math.random() * 3) + 1)
+
+      <LoginPrompt  }));
+
+        open={showLoginPrompt}};
+
+        onClose={() => setShowLoginPrompt(false)}
+
+        redirectTo={location.pathname}export default NewExplore;
+      />
+      
+      <PurchaseModal
+        open={showPurchase.open}
+        onClose={() => setShowPurchase({ open: false, creatorId: null, price: null })}
+        userId={user?.uid}
+        creatorId={showPurchase.creatorId}
+        price={showPurchase.price}
+      />
+    </div>
+  );
+};
+
+// Mock content generator for development
+const generateMockContent = (page) => {
+  return Array.from({ length: 12 }, (_, i) => ({
+    id: `${page}-${i}`,
+    mediaUrl: `https://picsum.photos/400/400?random=${page * 12 + i}`,
+    caption: 'Amazing content caption',
+    creatorName: `Creator ${i + 1}`,
+    creatorHandle: `creator${i + 1}`,
+    creatorAvatar: `https://i.pravatar.cc/150?u=${i}`,
+    verified: i % 3 === 0,
+    views: Math.floor(Math.random() * 100000),
+    likes: Math.floor(Math.random() * 10000),
+    isLiked: false,
+    isSaved: false,
+    following: false,
+    price: i % 2 === 0 ? 9.99 : 4.99,
+    tags: ['Lifestyle', 'Art', 'Photography'].slice(0, Math.floor(Math.random() * 3) + 1)
+  }));
+};
+
+export default NewExplore;

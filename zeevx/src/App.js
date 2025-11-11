@@ -6,10 +6,11 @@ import RequiredAuth from './Auth/RequireAuth';
 // Lazy-loaded routes for better performance
 const LandingPage = lazy(() => import('./Home/LandingPage'));
 const Login = lazy(() => import('./Auth/Login'));
-const Explore = lazy(() => import('./User/Explore'));
+const Explore = lazy(() => import('./User/NewExplore')); // Using the new explore component
 const Cards = lazy(() => import('./Home/Cards'));
 const SwipeButtons = lazy(() => import('./Home/SwipeButtons'));
 const Upload = lazy(() => import('./User/Upload'));
+const CreatorProfile = lazy(() => import('./Components/CreatorProfile'));
 const VideoCallComponent = lazy(() => import('./Service/VideoCall'));
 const Entry = lazy(() => import('./Home/Entry'));
 const ErrorPage = lazy(() => import('./Home/Error'));
@@ -33,6 +34,7 @@ const App = () => {
           <Route path="/login" element={<Login />} />
           <Route path="/entry" element={<Entry />} />
           <Route path="/explore" element={<Explore />} />
+          <Route path="/creator/:handle" element={<CreatorProfile />} />
           <Route path="/creator-signup" element={<CreatorSignup />} />
           <Route path="/signup" element={<Signup />} />
 
