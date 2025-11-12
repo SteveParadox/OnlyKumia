@@ -18,9 +18,8 @@ import GoogleIcon from '@mui/icons-material/Google';
 import AppleIcon from '@mui/icons-material/Apple';
 import MicrosoftIcon from '@mui/icons-material/Microsoft';
 import { createTheme, ThemeProvider } from '@mui/material/styles';
-
 import { signInWithPopup } from 'firebase/auth';
-import { FirebaseAuth, provider } from './Firebase.js';
+import { FirebaseAuth, provider } from './Firebase';
 import MicrosoftLogin from './MicrosoftLogin';
 import { useAuth } from './Auth';
 import { useNavigate, useLocation, Link as RouterLink } from 'react-router-dom';
@@ -43,108 +42,104 @@ function Copyright() {
 }
 
 const Login = () => {
-  const { auth, setAuth } = useAuth();
+  const { setUser } = useAuth();
   const navigate = useNavigate();
   const location = useLocation();
-  const from = location.state?.from?.pathname || '/';
+  const from = location.state?.from || '/home';
+
   const userRef = useRef(null);
   const errRef = useRef(null);
 
-  const [user, setUser] = useState('');
+  const [email, setEmail] = useState('');
   const [pwd, setPwd] = useState('');
   const [errMsg, setErrMsg] = useState('');
+  const [loading, setLoading] = useState(false);
 
-  useEffect(() => {
-    userRef.current?.focus();
-  }, []);
-
-  useEffect(() => {
-    setErrMsg('');
-  }, [user, pwd]);
+  useEffect(() => userRef.current?.focus(), []);
+  useEffect(() => setErrMsg(''), [email, pwd]);
 
   /** -------------------------------
-   *  Regular Login (Email + Password)
-   *  ------------------------------- */
+   * Regular Backend Login
+   * ------------------------------- */
   const handleLogin = async (e) => {
     e.preventDefault();
+    setLoading(true);
     try {
       const response = await axios.post(
         '/auth/login',
-        { email: user, password: pwd },
+        { email, password: pwd },
         {
           headers: { 'Content-Type': 'application/json' },
           withCredentials: true,
         }
       );
 
-      const { data } = response || {};
-      const { accessToken, roles, role } = data || {};
-      setAuth({ user, roles, accessToken });
+      const { data } = response;
+      const { user, accessToken, role } = data;
 
-      setUser('');
-      setPwd('');
+      if (!accessToken) throw new Error('No token received');
 
-      // Redirect based on user role
+      // Store user in global context
+      setUser({ ...user, accessToken });
+
+      // Redirect based on role
       if (role === 'creator') navigate('/creator-dashboard', { replace: true });
-      else if (role === 'fan') navigate('/fan-dashboard', { replace: true });
+      else if (role === 'fan') navigate('/explore', { replace: true });
       else navigate(from, { replace: true });
+
     } catch (err) {
-      if (!err?.response) setErrMsg('No Server Response');
-      else if (err.response?.status === 400) setErrMsg('Missing Username or Password');
-      else if (err.response?.status === 401) setErrMsg('Unauthorized');
-      else setErrMsg('Login Failed');
+      if (!err?.response) setErrMsg('Server not responding.');
+      else if (err.response?.status === 400) setErrMsg('Missing email or password.');
+      else if (err.response?.status === 401) setErrMsg('Invalid credentials.');
+      else setErrMsg('Login failed. Try again.');
+    } finally {
+      setLoading(false);
     }
   };
 
   /** -------------------------------
-   *  Google Login
-   *  ------------------------------- */
+   * Google Login
+   * ------------------------------- */
   const handleGoogleLogin = async () => {
     try {
       const result = await signInWithPopup(FirebaseAuth, provider);
-      const user = result.user;
-      const idToken = await user.getIdToken();
+      const firebaseUser = result.user;
+      const idToken = await firebaseUser.getIdToken();
 
-      const response = await fetch('/auth/google-login', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          Authorization: `Bearer ${idToken}`,
+      // Send token to backend
+      const response = await axios.post(
+        '/auth/google-login',
+        {
+          email: firebaseUser.email,
+          displayName: firebaseUser.displayName,
         },
-        body: JSON.stringify({
-          displayName: user.displayName,
-          email: user.email,
-        }),
-      });
+        {
+          headers: { Authorization: `Bearer ${idToken}` },
+        }
+      );
 
-      const data = await response.json();
+      const { data } = response;
+      setUser(data.user || firebaseUser);
 
-      if (data.success) {
-        setAuth(data.user);
-        // Conditional redirection
-        if (data.user.role === 'creator') navigate('/creator-dashboard', { replace: true });
-        else if (data.user.role === 'fan') navigate('/fan-dashboard', { replace: true });
-        else navigate(from, { replace: true });
-      } else {
-        console.error('Google Login failed:', data.error);
-      }
+      navigate(data.user?.role === 'creator' ? '/creator-dashboard' : from, { replace: true });
     } catch (error) {
-      console.error('Error signing in with Google:', error.message);
+      console.error('Google login failed:', error);
+      setErrMsg('Google login failed. Try again.');
     }
   };
 
   /** -------------------------------
-   *  Microsoft Login Handler
-   *  ------------------------------- */
+   * Microsoft Login (Future Integration)
+   * ------------------------------- */
   const handleMicrosoftLogin = (loginResponse) => {
     console.log('Microsoft login response:', loginResponse);
+    // You can integrate a similar POST to backend here once configured
   };
 
   return (
     <ThemeProvider theme={theme}>
       <Container component="main" maxWidth="xs">
         <CssBaseline />
-
         <Box
           sx={{
             marginTop: 8,
@@ -162,13 +157,7 @@ const Login = () => {
           </Typography>
 
           {errMsg && (
-            <Typography
-              color="error"
-              variant="body2"
-              align="center"
-              ref={errRef}
-              sx={{ mt: 1 }}
-            >
+            <Typography color="error" variant="body2" align="center" ref={errRef} sx={{ mt: 1 }}>
               {errMsg}
             </Typography>
           )}
@@ -183,8 +172,8 @@ const Login = () => {
               name="email"
               autoComplete="email"
               autoFocus
-              value={user}
-              onChange={(e) => setUser(e.target.value)}
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
               ref={userRef}
             />
 
@@ -201,23 +190,22 @@ const Login = () => {
               onChange={(e) => setPwd(e.target.value)}
             />
 
-            <FormControlLabel
-              control={<Checkbox value="remember" color="primary" />}
-              label="Remember me"
-            />
+            <FormControlLabel control={<Checkbox value="remember" color="primary" />} label="Remember me" />
 
-            <Button type="submit" fullWidth variant="contained" sx={{ mt: 2, mb: 1 }}>
-              Sign In
+            <Button
+              type="submit"
+              fullWidth
+              variant="contained"
+              sx={{ mt: 2, mb: 1 }}
+              disabled={loading}
+            >
+              {loading ? 'Signing in...' : 'Sign In'}
             </Button>
 
             <Grid container spacing={2} justifyContent="center" sx={{ mt: 1 }}>
               <Grid item>
-                <Button
-                  startIcon={<GoogleIcon />}
-                  onClick={handleGoogleLogin}
-                  color="error"
-                >
-                
+                <Button startIcon={<GoogleIcon />} onClick={handleGoogleLogin} color="error">
+                  Google
                 </Button>
               </Grid>
               <Grid item>
