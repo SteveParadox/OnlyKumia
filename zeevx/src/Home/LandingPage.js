@@ -86,6 +86,10 @@ const LandingPage = () => {
                 <Link to="/login" className="go-premium-cta">
                   Login
                 </Link>
+                |
+                <Link to="/signup" className="go-premium-cta">
+                  Sign Up
+                </Link>
               )}
             </li>
           </ul>
