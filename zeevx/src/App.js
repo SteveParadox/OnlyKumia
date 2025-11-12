@@ -63,7 +63,7 @@ const App = () => {
         </Routes>
       </Suspense>
     </div>
-  );
+  );git 
 };
 
 export default App;

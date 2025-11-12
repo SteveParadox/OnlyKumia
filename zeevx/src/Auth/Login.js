@@ -3,7 +3,6 @@ import {
   TextField,
   Button,
   Grid,
-  Paper,
   Typography,
   Avatar,
   CssBaseline,
@@ -11,12 +10,12 @@ import {
   Container,
   FormControlLabel,
   Checkbox,
-  Link as MLink
+  Link as MLink,
+  Paper,
 } from '@mui/material';
 import LockOutlinedIcon from '@mui/icons-material/LockOutlined';
 import GoogleIcon from '@mui/icons-material/Google';
 import AppleIcon from '@mui/icons-material/Apple';
-import MicrosoftIcon from '@mui/icons-material/Microsoft';
 import { createTheme, ThemeProvider } from '@mui/material/styles';
 import { signInWithPopup } from 'firebase/auth';
 import { FirebaseAuth, provider } from './Firebase';
@@ -28,18 +27,16 @@ import '../Css/Login.css';
 
 const theme = createTheme();
 
-function Copyright() {
-  return (
-    <Typography variant="body2" color="text.secondary" align="center">
-      {'Copyright © '}
-      <MLink color="inherit" href="/">
-        OnlyKumia
-      </MLink>{' '}
-      {new Date().getFullYear()}
-      {'.'}
-    </Typography>
-  );
-}
+const Copyright = () => (
+  <Typography variant="body2" color="text.secondary" align="center" sx={{ mt: 4 }}>
+    {'Copyright © '}
+    <MLink color="inherit" href="/">
+      OnlyKumia
+    </MLink>{' '}
+    {new Date().getFullYear()}
+    {'.'}
+  </Typography>
+);
 
 const Login = () => {
   const { setUser } = useAuth();
@@ -58,9 +55,6 @@ const Login = () => {
   useEffect(() => userRef.current?.focus(), []);
   useEffect(() => setErrMsg(''), [email, pwd]);
 
-  /** -------------------------------
-   * Regular Backend Login
-   * ------------------------------- */
   const handleLogin = async (e) => {
     e.preventDefault();
     setLoading(true);
@@ -68,25 +62,18 @@ const Login = () => {
       const response = await axios.post(
         '/auth/login',
         { email, password: pwd },
-        {
-          headers: { 'Content-Type': 'application/json' },
-          withCredentials: true,
-        }
+        { headers: { 'Content-Type': 'application/json' }, withCredentials: true }
       );
 
       const { data } = response;
       const { user, accessToken, role } = data;
-
       if (!accessToken) throw new Error('No token received');
 
-      // Store user in global context
       setUser({ ...user, accessToken });
 
-      // Redirect based on role
       if (role === 'creator') navigate('/creator-dashboard', { replace: true });
       else if (role === 'fan') navigate('/explore', { replace: true });
       else navigate(from, { replace: true });
-
     } catch (err) {
       if (!err?.response) setErrMsg('Server not responding.');
       else if (err.response?.status === 400) setErrMsg('Missing email or password.');
@@ -97,30 +84,20 @@ const Login = () => {
     }
   };
 
-  /** -------------------------------
-   * Google Login
-   * ------------------------------- */
   const handleGoogleLogin = async () => {
     try {
       const result = await signInWithPopup(FirebaseAuth, provider);
       const firebaseUser = result.user;
       const idToken = await firebaseUser.getIdToken();
 
-      // Send token to backend
       const response = await axios.post(
         '/auth/google-login',
-        {
-          email: firebaseUser.email,
-          displayName: firebaseUser.displayName,
-        },
-        {
-          headers: { Authorization: `Bearer ${idToken}` },
-        }
+        { email: firebaseUser.email, displayName: firebaseUser.displayName },
+        { headers: { Authorization: `Bearer ${idToken}` } }
       );
 
       const { data } = response;
       setUser(data.user || firebaseUser);
-
       navigate(data.user?.role === 'creator' ? '/creator-dashboard' : from, { replace: true });
     } catch (error) {
       console.error('Google login failed:', error);
@@ -128,41 +105,49 @@ const Login = () => {
     }
   };
 
-  /** -------------------------------
-   * Microsoft Login (Future Integration)
-   * ------------------------------- */
   const handleMicrosoftLogin = (loginResponse) => {
     console.log('Microsoft login response:', loginResponse);
-    // You can integrate a similar POST to backend here once configured
   };
 
   return (
     <ThemeProvider theme={theme}>
       <Container component="main" maxWidth="xs">
         <CssBaseline />
-        <Box
-          sx={{
-            marginTop: 8,
-            display: 'flex',
-            flexDirection: 'column',
-            alignItems: 'center',
-          }}
-        >
-          <Avatar sx={{ m: 1, bgcolor: 'secondary.main' }}>
-            <LockOutlinedIcon />
-          </Avatar>
 
-          <Typography component="h1" variant="h5">
-            Sign In
-          </Typography>
+        {/* Login Card */}
+        <Paper
+          component="section"
+          elevation={3}
+          sx={{ mt: 8, p: 4, display: 'flex', flexDirection: 'column', alignItems: 'center' }}
+        >
+          <header>
+            <Avatar sx={{ m: 1, bgcolor: 'secondary.main' }}>
+              <LockOutlinedIcon />
+            </Avatar>
+            <Typography component="h1" variant="h5">
+              Sign In
+            </Typography>
+          </header>
 
           {errMsg && (
-            <Typography color="error" variant="body2" align="center" ref={errRef} sx={{ mt: 1 }}>
+            <Typography
+              color="error"
+              variant="body2"
+              align="center"
+              ref={errRef}
+              sx={{ mt: 1 }}
+            >
               {errMsg}
             </Typography>
           )}
 
-          <Box component="form" onSubmit={handleLogin} noValidate sx={{ mt: 1 }}>
+          {/* Form */}
+          <Box
+            component="form"
+            onSubmit={handleLogin}
+            noValidate
+            sx={{ mt: 2, width: '100%' }}
+          >
             <TextField
               margin="normal"
               required
@@ -190,7 +175,10 @@ const Login = () => {
               onChange={(e) => setPwd(e.target.value)}
             />
 
-            <FormControlLabel control={<Checkbox value="remember" color="primary" />} label="Remember me" />
+            <FormControlLabel
+              control={<Checkbox value="remember" color="primary" />}
+              label="Remember me"
+            />
 
             <Button
               type="submit"
@@ -201,25 +189,37 @@ const Login = () => {
             >
               {loading ? 'Signing in...' : 'Sign In'}
             </Button>
+          </Box>
 
-            <Grid container spacing={2} justifyContent="center" sx={{ mt: 1 }}>
-              <Grid item>
-                <Button startIcon={<GoogleIcon />} onClick={handleGoogleLogin} color="error">
+          {/* Social Login */}
+          <Box component="section" sx={{ mt: 3, width: '100%' }}>
+            <Grid container spacing={2} justifyContent="center">
+              <Grid item xs={12} sm={4}>
+                <Button
+                  startIcon={<GoogleIcon />}
+                  onClick={handleGoogleLogin}
+                  fullWidth
+                  color="error"
+                  variant="outlined"
+                >
                   Google
                 </Button>
               </Grid>
-              <Grid item>
+              <Grid item xs={12} sm={4}>
                 <MicrosoftLogin onMicrosoftLogin={handleMicrosoftLogin} />
               </Grid>
-              <Grid item>
-                <Button startIcon={<AppleIcon />} disabled>
+              <Grid item xs={12} sm={4}>
+                <Button startIcon={<AppleIcon />} disabled fullWidth variant="outlined">
                   Apple
                 </Button>
               </Grid>
             </Grid>
+          </Box>
 
-            <Grid container sx={{ mt: 2 }}>
-              <Grid item xs>
+          {/* Links */}
+          <Box component="footer" sx={{ mt: 3, width: '100%' }}>
+            <Grid container justifyContent="space-between">
+              <Grid item>
                 <MLink href="#" variant="body2">
                   Forgot password?
                 </MLink>
@@ -231,9 +231,9 @@ const Login = () => {
               </Grid>
             </Grid>
           </Box>
-        </Box>
+        </Paper>
 
-        <Copyright sx={{ mt: 8, mb: 4 }} />
+        <Copyright />
       </Container>
     </ThemeProvider>
   );
