@@ -77,21 +77,24 @@ const LandingPage = () => {
             <li>
               <Link to="/about">About</Link>
             </li>
-            <li>
-              {user ? (
+           <li>
+            {user ? (
                 <Link to="/dashboard" className="go-premium-cta">
                   Dashboard
                 </Link>
               ) : (
-                <Link to="/login" className="go-premium-cta">
-                  Login
-                </Link>
-                |
-                <Link to="/signup" className="go-premium-cta">
-                  Sign Up
-                </Link>
+                <>
+                  <Link to="/login" className="go-premium-cta">
+                    Login
+                  </Link>
+                  <span style={{ margin: '0 6px' }}>|</span>
+                  <Link to="/signup" className="go-premium-cta">
+                    Sign Up
+                  </Link>
+                </>
               )}
             </li>
+
           </ul>
         </div>
       </nav>
