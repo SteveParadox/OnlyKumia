@@ -72,7 +72,7 @@ function Header() {
 
       <div className="header__right">
         <Tooltip title="Profile" arrow>
-          <Link to="/profile">
+          <Link to="/creator/dashboard">
             <img
               src={auth.picture}
               alt="Profile"
