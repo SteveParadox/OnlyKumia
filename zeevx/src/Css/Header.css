@@ -1,47 +1,88 @@
 .header {
-    display: flex;
-    align-items: center;
-    justify-content: space-evenly;
-    z-index: 100;
-    border-bottom: 1px solid #f9f9f9;
-    background: linear-gradient(to right, #b4d7f8, #fae0e0);
-    gap: 12px;
-    padding: 8px 16px;
-    position: sticky;
-    top: 0;
-    background: var(--surface);
-    border-bottom: 1px solid rgba(12,18,28,0.04);
-    box-shadow: 0 4px 16px rgba(12,18,28,0.04);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  position: sticky;
+  top: 0;
+  background: linear-gradient(to right, #f7fafc, #f0f9ff);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+  padding: 0.5rem 1.5rem;
+  z-index: 1100;
+  transition: all 0.3s ease;
+}
+
+.header__left {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.header__menu {
+  display: none;
+}
+
+.header__brand {
+  display: flex;
+  align-items: center;
+  text-decoration: none;
+  gap: 0.5rem;
 }
 
 .header__logo {
-    object-fit: contain;
-    height: 36px;
+  height: 36px;
+  width: 36px;
 }
 
-/* icons inside header - use token colors */
-.header__icon {
-    padding: 8px;
-    color: var(--color-primary);
+.header__title {
+  font-size: 1.2rem;
+  font-weight: 600;
+  color: #1a202c;
+}
+
+.header__nav {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+.header__nav-item {
+  transition: transform 0.2s ease, background-color 0.2s ease;
+  border-radius: 50%;
+}
+.header__nav-item.active {
+  background-color: rgba(0, 123, 255, 0.1);
+}
+.header__nav-item:hover {
+  transform: scale(1.1);
+}
+
+.header__right {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
 }
 
 .header__profile-img {
-    height: 36px;
-    width: 36px;
-    object-fit: cover;
-    border-radius: 50%;
+  height: 40px;
+  width: 40px;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 2px solid transparent;
+  transition: border 0.3s ease;
+}
+.header__profile-img:hover {
+  border-color: #3182ce;
 }
 
-@media (max-width: 640px){
-    .header {
-        padding: 8px 12px;
-        gap: 8px;
-    }
-    .header__logo {
-        height: 30px;
-    }
-    .header__profile-img {
-        height: 30px;
-        width: 30px;
-    }
+/* 🔹 Responsive Layout */
+@media (max-width: 768px) {
+  .header__nav {
+    display: none;
+  }
+  .header__menu {
+    display: inline-flex;
+  }
+  .header {
+    padding: 0.5rem 1rem;
+  }
 }
