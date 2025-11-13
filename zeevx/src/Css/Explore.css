@@ -61,6 +61,8 @@
   margin: 0 -16px 20px;
   overflow-x: auto;
   scrollbar-width: none;
+  display: flex;
+  justify-content: center; /* centers horizontally */
 }
 
 .category-scroll::-webkit-scrollbar {
@@ -70,7 +72,9 @@
 .category-pills {
   display: flex;
   gap: 12px;
+  justify-content: center; /* keeps the pills themselves centered */
   padding: 0 16px;
+  max-width: 100%;
 }
 
 .category-pill {
