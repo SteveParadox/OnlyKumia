@@ -10,6 +10,7 @@ import { useAuth } from '../Auth/Auth';
 import CreatorStream from '../Components/CreatorStream';
 import StreamChat from '../Components/StreamChat';
 import TipCreator from '../Components/TipCreator';
+import '../Css/CreatorDashboard.css';
 
 
 
