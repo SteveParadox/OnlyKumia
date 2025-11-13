@@ -5,6 +5,7 @@ import VerificationStatus from '../Components/VerificationStatus';
 import PurchaseModal from '../Components/PurchaseModal';
 import mockPayments from '../Utils/mockPayments';
 import { useAuth } from '../Auth/Auth';
+
 import '../Css/CreatorDashboard.css';
 
 // Lazy load heavy components
