@@ -51,7 +51,7 @@ function Header() {
             alt="App Logo"
             className="header__logo"
           />
-          <span className="header__title">MyApp</span>
+          <span className="header__title">OnlyKumia</span>
         </Link>
       </div>
 
