@@ -43,7 +43,7 @@ const App = () => {
           <Route path="/home" element={<><Cards /><SwipeButtons /></>} />
           <Route path="/upload" element={<Upload />} />
           <Route path="/video/call" element={<VideoCallComponent />} />
-          <Route path="/creator-dashboard" element={<CreatorDashboard />} />
+          <Route path="/creator/dashboard" element={<CreatorDashboard />} />
 
           {/* Utility + Testing */}
           <Route path="/test" element={<Test />} />
