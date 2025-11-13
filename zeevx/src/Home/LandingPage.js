@@ -79,7 +79,7 @@ const LandingPage = () => {
             </li>
            <li>
             {user ? (
-                <Link to="/creator-dashboard" className="go-premium-cta">
+                <Link to="/creator/dashboard" className="go-premium-cta">
                   Dashboard
                 </Link>
               ) : (
