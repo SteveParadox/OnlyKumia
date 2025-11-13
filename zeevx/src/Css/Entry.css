@@ -1,0 +1,233 @@
+/* === Global Resets === */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  font-family: "Inter", "Poppins", sans-serif;
+  scroll-behavior: smooth;
+}
+
+body {
+  background-color: #0a0a0c;
+  color: #e5e8ef;
+  overflow-x: hidden;
+}
+
+/* === Layout Root === */
+.landing-root {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+  background: linear-gradient(135deg, #000814, #001d3d);
+  background-attachment: fixed;
+}
+
+/* === HERO SECTION === */
+.hero {
+  text-align: center;
+  padding: 8rem 2rem 6rem;
+  position: relative;
+  background: radial-gradient(circle at top center, #001d3d, #000814 70%);
+}
+
+.hero-logo {
+  width: 110px;
+  height: 110px;
+  margin-bottom: 1.5rem;
+  filter: drop-shadow(0 0 10px rgba(0, 128, 255, 0.4));
+  animation: float 4s ease-in-out infinite;
+}
+
+@keyframes float {
+  0%, 100% { transform: translateY(0px); }
+  50% { transform: translateY(-8px); }
+}
+
+.hero-title {
+  font-size: 2.8rem;
+  font-weight: 700;
+  margin-bottom: 1rem;
+  color: #f1f6ff;
+  letter-spacing: 0.5px;
+}
+
+.brand-highlight {
+  background: linear-gradient(90deg, #00c6ff, #0072ff);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+.hero-sub {
+  max-width: 650px;
+  margin: 0 auto 2.5rem;
+  color: #b3c0d8;
+  font-size: 1.1rem;
+  line-height: 1.6;
+}
+
+/* === Buttons === */
+.glow-btn,
+.ghost-btn {
+  cursor: pointer;
+  border: none;
+  border-radius: 1.2rem;
+  font-weight: 600;
+  transition: all 0.3s ease;
+  font-size: 1rem;
+}
+
+.glow-btn {
+  background: linear-gradient(90deg, #0072ff, #00c6ff);
+  color: white;
+  padding: 0.9rem 2.2rem;
+  box-shadow: 0 0 12px rgba(0, 114, 255, 0.4);
+}
+
+.glow-btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 0 20px rgba(0, 153, 255, 0.6);
+}
+
+.ghost-btn {
+  background: transparent;
+  border: 2px solid #00aaff;
+  color: #00c6ff;
+  padding: 0.85rem 2rem;
+  margin-left: 1rem;
+}
+
+.ghost-btn:hover {
+  background: rgba(0, 170, 255, 0.1);
+  transform: translateY(-2px);
+}
+
+/* === FEATURES SECTION === */
+.features-section {
+  text-align: center;
+  padding: 6rem 2rem;
+  background: linear-gradient(180deg, #000814, #001a33);
+}
+
+.features-section h2 {
+  font-size: 2.2rem;
+  margin-bottom: 3rem;
+  color: #eaf4ff;
+}
+
+.features-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+  gap: 2rem;
+  max-width: 1100px;
+  margin: 0 auto;
+}
+
+.feature-card {
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid rgba(255, 255, 255, 0.05);
+  border-radius: 1.5rem;
+  padding: 2rem;
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.feature-card:hover {
+  transform: translateY(-6px);
+  box-shadow: 0 0 20px rgba(0, 153, 255, 0.3);
+}
+
+.feature-icon {
+  font-size: 2rem;
+  margin-bottom: 1rem;
+}
+
+.feature-card h3 {
+  font-size: 1.3rem;
+  color: #f1f6ff;
+  margin-bottom: 0.5rem;
+}
+
+.feature-card p {
+  color: #a8b3cc;
+  font-size: 0.95rem;
+  line-height: 1.6;
+}
+
+/* === CTA SECTION === */
+.cta-section {
+  text-align: center;
+  padding: 5rem 2rem 6rem;
+  background: linear-gradient(135deg, #001a33, #000814);
+}
+
+.cta-section h2 {
+  font-size: 2rem;
+  margin-bottom: 1rem;
+  color: #f1f6ff;
+}
+
+.cta-section p {
+  color: #a8b3cc;
+  max-width: 600px;
+  margin: 0 auto 2rem;
+  font-size: 1.05rem;
+}
+
+.cta-btn {
+  font-size: 1rem;
+  padding: 1rem 2.4rem;
+}
+
+/* === FOOTER === */
+.footer {
+  text-align: center;
+  padding: 2rem 1rem;
+  border-top: 1px solid rgba(255, 255, 255, 0.1);
+  background-color: #000a14;
+}
+
+.footer p {
+  color: #7a869b;
+  font-size: 0.9rem;
+  margin-bottom: 0.6rem;
+}
+
+.socials {
+  display: flex;
+  justify-content: center;
+  gap: 1.5rem;
+}
+
+.socials a {
+  color: #00aaff;
+  text-decoration: none;
+  transition: color 0.3s ease;
+}
+
+.socials a:hover {
+  color: #00e0ff;
+}
+
+/* === RESPONSIVE === */
+@media (max-width: 768px) {
+  .hero-title {
+    font-size: 2.1rem;
+  }
+
+  .hero-sub {
+    font-size: 1rem;
+  }
+
+  .glow-btn,
+  .ghost-btn {
+    width: 100%;
+    margin: 0.6rem 0;
+  }
+
+  .features-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .cta-section h2 {
+    font-size: 1.8rem;
+  }
+}

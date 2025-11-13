@@ -196,7 +196,7 @@ const LandingPage = () => {
             color="secondary"
             size="large"
             component={Link}
-            to="/creator-signup"
+            to="/entry"
             className="glow-btn"
           >
             Join OnlyKumia

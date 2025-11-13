@@ -1,54 +1,27 @@
-import React, { createContext, useContext, useEffect, useState } from 'react';
-import { FirebaseAuth } from './Firebase.js';
+import React, { createContext, useContext, useState } from 'react';
 
 // Create the context
 const AuthContext = createContext(null);
 
-// Custom hook for easy access
-export const useAuth = () => {
-  return useContext(AuthContext);
-};
+// Custom hook
+export const useAuth = () => useContext(AuthContext);
 
-// Provider component
+// Public-mode AuthProvider for testing
 export const AuthProvider = ({ children }) => {
-  const [user, setUser] = useState(null);
-  const [loading, setLoading] = useState(true);
+  // Fake user for testing, avoids auto-redirects
+  const [user, setUser] = useState({ name: 'guest', role: 'fan' });
+  const [loading, setLoading] = useState(false); // skip loading
 
-  // Track authentication state
-  useEffect(() => {
-    const unsubscribe = FirebaseAuth.onAuthStateChanged((authUser) => {
-      setUser(authUser || null);
-      setLoading(false);
-    });
-    return unsubscribe;
-  }, []);
+  const logout = () => setUser(null); // simple logout for testing
 
-  // Sign out user
-  const logout = async () => {
-    try {
-      await FirebaseAuth.signOut();
-      setUser(null);
-    } catch (error) {
-      console.error('Logout failed:', error);
-    }
-  };
-
-  // Provide both shapes: { user, setUser } and { auth, setAuth }
-  // Some components expect `auth`/`setAuth`, others expect `user`/`setUser`.
   const value = {
-    // canonical names
     user,
     setUser,
-    // backward-compatible aliases used in other components
     auth: user,
     setAuth: setUser,
     loading,
     logout,
   };
 
-  return (
-    <AuthContext.Provider value={value}>
-      {!loading && children}
-    </AuthContext.Provider>
-  );
+  return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
 };
