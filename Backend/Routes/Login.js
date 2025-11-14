@@ -5,6 +5,11 @@ import httpStatus from 'http-status';
 import ApiError from '../Utils/ApiError.js';
 import helper from '../Utils/helpers.js';
 import authMiddleware from '../Auth/authMiddleware.js';
+import limiter from '../Auth/rate-limiter.js';
+import multer from 'multer';
+import path from 'path';
+import fs from 'fs';
+import botProtection from '../Auth/botProtection.js';
 
 const router = express.Router();
 const { acceptableGender, acceptableCountries, hashPassword } = helper;
@@ -72,7 +77,7 @@ router.post('/login', async (req, res) => {
 // =======================
 // Email/Password SignUp
 // =======================
-router.post('/signUp', async (req, res) => {
+router.post('/signUp', limiter, botProtection, async (req, res) => {
     try {
         const { email, password, gender, country } = req.body;
 
@@ -122,6 +127,89 @@ router.post('/signUp', async (req, res) => {
         console.error("SignUp error:", error);
         return res.status(error.statusCode || httpStatus.BAD_REQUEST).json({
             message: error.message || "Signup failed",
+            error
+        });
+    }
+});
+
+// =======================
+// Creator SignUp (with optional KYC document upload)
+// Accepts multipart/form-data with optional 'idDocument' file and 'idHash' field
+// =======================
+// Configure multer storage for creator signup KYC uploads
+const creatorStorageDir = process.env.LOCAL_STORAGE_PATH || './uploads';
+if (!fs.existsSync(creatorStorageDir)) fs.mkdirSync(creatorStorageDir, { recursive: true });
+
+const creatorStorage = multer.diskStorage({
+    destination: (req, file, cb) => cb(null, creatorStorageDir),
+    filename: (req, file, cb) => cb(null, `${Date.now()}-${file.originalname}`)
+});
+
+const creatorUpload = multer({
+    storage: creatorStorage,
+    limits: { fileSize: 10 * 1024 * 1024 }
+});
+
+router.post('/creator/signup', limiter, creatorUpload.single('idDocument'), botProtection, async (req, res) => {
+    try {
+        // Basic honeypot check handled by botProtection middleware
+        const { email, password, gender, country, fullName, dob, idHash } = req.body;
+
+        // Validate inputs
+        const emailReg = /^[\w-\.]+@([\w-]+\.)+[\w-]{2,}$/;
+        if (!emailReg.test(email) || !password || password.length < 6) {
+            throw new ApiError("INVALID_INPUT", httpStatus.NOT_ACCEPTABLE, "Invalid email or password");
+        }
+
+        if (gender && !helper.acceptableGender.includes(gender)) {
+            throw new ApiError("INVALID_GENDER", httpStatus.NOT_ACCEPTABLE, "Invalid gender type");
+        }
+
+        if (country && !helper.acceptableCountries.includes(country)) {
+            throw new ApiError("INVALID_COUNTRY", httpStatus.NOT_ACCEPTABLE, "Invalid country");
+        }
+
+        // Check if user exists
+        const existing = await User.findOne({ email });
+        if (existing) throw new ApiError("ACCOUNT_EXISTS", httpStatus.CONFLICT, "Account already exists!");
+
+        const hashedPassword = await helper.hashPassword(password);
+
+        const newUser = new User({
+            email,
+            password: hashedPassword,
+            gender,
+            country,
+            emailVerified: false,
+            role: 'creator',
+            kyc_status: 'pending',
+            metadata: { fullName, dateOfBirth: dob, country }
+        });
+
+        // If an ID document was uploaded, attach a pointer to its path (do NOT store raw document in response)
+        if (req.file) {
+            // store path in a helper place - in production this should be an encrypted secure storage
+            newUser.metadata.idDocumentPath = path.relative(process.cwd(), req.file.path);
+            if (idHash) newUser.metadata.idHash = idHash;
+        }
+
+        await newUser.save();
+
+        const access = await newUser.generateToken(newUser.id, newUser.email);
+        const refresh = await newUser.generateRefreshToken(access.accessToken, false);
+
+        return res.status(httpStatus.CREATED).json({
+            message: 'Creator account created; KYC pending',
+            data: {
+                user: newUser,
+                access,
+                refresh
+            }
+        });
+    } catch (error) {
+        console.error('Creator SignUp error:', error);
+        return res.status(error.statusCode || httpStatus.BAD_REQUEST).json({
+            message: error.message || 'Creator signup failed',
             error
         });
     }

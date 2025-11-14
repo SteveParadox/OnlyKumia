@@ -1,68 +1,61 @@
-import React, { useState, useEffect } from 'react';
-import TinderCard from 'react-tinder-card';
-import '../Css/Cards.css';
-import axios from '../Utils/axios';
-import InfoIcon from '@mui/icons-material/Info';
+import React, { useState, useEffect } from "react";
+import TinderCard from "react-tinder-card";
+import "../Css/Cards.css";
+import axios from "../Utils/axios";
+import InfoIcon from "@mui/icons-material/Info";
 import IconButton from "@mui/material/IconButton";
-// import SwipeButtons from './SwipeButtons';
-
 
 function Cards() {
   const [people, setPeople] = useState([]);
 
   useEffect(() => {
     async function fetchData() {
-      const req = await axios.get('/cards');
+      const req = await axios.get("/cards");
       setPeople(req.data);
     }
     fetchData();
-  }, [])
+  }, []);
 
-  const swiped = (direction, nameToDelete) => {
-    if (direction === 'right') {
-      // Logic to add the item
-      console.log('Adding ' + nameToDelete);
-    } else if (direction === 'left') {
-      // Logic to delete the item
-      console.log('Removing ' + nameToDelete);
-    } else {
-      // Handle other directions (if needed)
-      console.log('Unknown direction: ' + direction);
+  const swiped = (dir, name) => {
+    if (dir === "right") {
+      console.log("Added:", name);
+    } else if (dir === "left") {
+      console.log("Removed:", name);
     }
   };
-  
 
   const outOfFrame = (name) => {
-    console.log(name + ' left the screen');
+    console.log(name + " left the screen");
   };
 
   return (
-    <div className="Cards">
-      <div className="Card__cardContainer">
+    <div className="cards">
+      <div className="cards__container">
         {people.map((person) => (
           <TinderCard
-            className="swipe"
+            className="cards__swipe"
             key={person.name}
-            preventSwipe={['up', 'down']}
+            preventSwipe={["up", "down"]}
             onSwipe={(dir) => swiped(dir, person.name)}
             onCardLeftScreen={() => outOfFrame(person.name)}
           >
-            <div style={{ backgroundImage: `url(${person.imgUrl})` }} className="card">
-              <h3>
-                {person.name}
-                <IconButton>
-                  <InfoIcon fontSize="medium" className="header__icon" />
+            <div
+              className="cards__card"
+              style={{ backgroundImage: `url(${person.imgUrl})` }}
+            >
+              <div className="cards__gradient" />
+
+              <div className="cards__footer">
+                <h3>{person.name}</h3>
+
+                <IconButton className="cards__infoBtn">
+                  <InfoIcon fontSize="medium" />
                 </IconButton>
-              </h3>
+              </div>
             </div>
           </TinderCard>
         ))}
       </div>
-     {/* <SwipeButtons
-        onLeftSwipe={swipeLeft}
-        onRightSwipe={swipeRight}
-        onRepeat={goBack}
-        /> */}
     </div>
   );
 }
