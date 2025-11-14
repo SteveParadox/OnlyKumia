@@ -1,6 +1,6 @@
 import React, { useEffect, useRef } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import "./Error.css";
+import "../Css/Error.css";
 
 const Error = ({ title = "Oops!", message = "Page not found.", code = 404 }) => {
   const navigate = useNavigate();
