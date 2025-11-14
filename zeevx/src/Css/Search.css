@@ -1,0 +1,247 @@
+/* Search.css
+   Search results page styling
+*/
+
+.search-page {
+  padding: 20px;
+  background: var(--bg, #000000);
+  color: var(--white, #ffffff);
+}
+
+/* Search Header */
+.search-header {
+  display: flex;
+  gap: 12px;
+  margin-bottom: 24px;
+  padding: 20px;
+  background: rgba(14, 165, 233, 0.05);
+  border-radius: 12px;
+  border: 1px solid rgba(14, 165, 233, 0.1);
+}
+
+.search-input {
+  flex: 1;
+}
+
+.search-input .MuiOutlinedInput-root {
+  background: rgba(255, 255, 255, 0.02);
+  border-radius: 8px;
+  color: var(--white, #ffffff);
+}
+
+.search-input .MuiOutlinedInput-notchedOutline {
+  border-color: rgba(255, 255, 255, 0.06) !important;
+}
+
+.search-header .MuiButton-contained {
+  background: linear-gradient(135deg, #0ea5e9, #0284c7);
+  color: white;
+  padding: 10px 24px;
+}
+
+/* Filters & Sort */
+.search-filters {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 24px;
+  gap: 16px;
+  flex-wrap: wrap;
+}
+
+.filter-group {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.filter-group .MuiChip-root {
+  cursor: pointer;
+  transition: all 200ms ease;
+}
+
+.filter-group .MuiChip-filled {
+  background: linear-gradient(135deg, #0ea5e9, #0284c7);
+  color: white;
+}
+
+.sort-group .sort-select {
+  width: 160px;
+}
+
+.sort-select .MuiOutlinedInput-root {
+  background: rgba(255, 255, 255, 0.02);
+  color: var(--white, #ffffff);
+  border-radius: 8px;
+}
+
+.sort-select .MuiOutlinedInput-notchedOutline {
+  border-color: rgba(255, 255, 255, 0.06) !important;
+}
+
+/* No Results */
+.no-results {
+  text-align: center;
+  padding: 60px 20px;
+}
+
+/* Results Sections */
+.results-section {
+  margin-bottom: 40px;
+}
+
+.section-title {
+  margin-bottom: 16px;
+  font-weight: 700;
+  color: var(--white, #ffffff);
+  border-bottom: 2px solid rgba(14, 165, 233, 0.2);
+  padding-bottom: 12px;
+}
+
+/* Creator Cards */
+.creator-card {
+  background: var(--surface, #0b0b0c);
+  border: 1px solid rgba(255, 255, 255, 0.05);
+  border-radius: 12px;
+  overflow: hidden;
+  transition: all 200ms ease;
+  cursor: pointer;
+}
+
+.creator-card:hover {
+  border-color: rgba(14, 165, 233, 0.3);
+  transform: translateY(-4px);
+  box-shadow: 0 8px 24px rgba(14, 165, 233, 0.1);
+}
+
+.creator-avatar-section {
+  position: relative;
+  padding: 20px 0;
+  display: flex;
+  justify-content: center;
+  background: linear-gradient(135deg, rgba(14, 165, 233, 0.1), rgba(2, 132, 199, 0.05));
+}
+
+.creator-avatar {
+  width: 80px;
+  height: 80px;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 3px solid #0ea5e9;
+}
+
+.verified-badge {
+  position: absolute;
+  bottom: 8px;
+  right: 30%;
+  background: #0ea5e9;
+  color: white;
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 14px;
+  font-weight: bold;
+  border: 2px solid var(--surface, #0b0b0c);
+}
+
+.creator-card .MuiCardContent-root {
+  text-align: center;
+}
+
+.creator-description {
+  margin: 8px 0;
+  color: rgba(255, 255, 255, 0.6) !important;
+}
+
+.followers-count {
+  display: block;
+  margin-top: 12px;
+  color: #0ea5e9;
+  font-weight: 600;
+}
+
+/* Content Cards */
+.content-card {
+  background: var(--surface, #0b0b0c);
+  border: 1px solid rgba(255, 255, 255, 0.05);
+  border-radius: 12px;
+  overflow: hidden;
+  transition: all 200ms ease;
+  cursor: pointer;
+  position: relative;
+}
+
+.content-card:hover {
+  border-color: rgba(14, 165, 233, 0.3);
+  transform: translateY(-4px);
+  box-shadow: 0 8px 24px rgba(14, 165, 233, 0.1);
+}
+
+.content-card:hover .content-thumbnail {
+  transform: scale(1.05);
+}
+
+.content-thumbnail {
+  width: 100%;
+  height: 200px;
+  object-fit: cover;
+  transition: transform 200ms ease;
+}
+
+.content-duration {
+  position: absolute;
+  bottom: 8px;
+  right: 8px;
+  background: rgba(0, 0, 0, 0.7);
+  color: white;
+  padding: 4px 8px;
+  border-radius: 4px;
+  font-size: 0.8rem;
+  font-weight: 600;
+  z-index: 1;
+}
+
+.content-card .MuiCardContent-root {
+  padding: 12px;
+}
+
+.content-title {
+  font-weight: 600;
+  margin-bottom: 8px;
+  line-height: 1.4;
+  color: var(--white, #ffffff);
+}
+
+.content-stats {
+  display: block;
+  margin-top: 8px;
+  color: #0ea5e9;
+  font-weight: 500;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .search-header {
+    flex-direction: column;
+  }
+
+  .search-filters {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .filter-group {
+    width: 100%;
+  }
+
+  .sort-group {
+    width: 100%;
+  }
+
+  .sort-select {
+    width: 100% !important;
+  }
+}

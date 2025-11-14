@@ -16,6 +16,8 @@ const ErrorPage = lazy(() => import('./Home/Error'));
 const CreatorSignup = lazy(() => import('./Pages/CreatorSignUp'));
 const Signup = lazy(() => import('./Pages/Signup'));
 const CreatorDashboard = lazy(() => import('./Pages/CreatorDashboard'));
+const Messages = lazy(() => import('./Pages/Messages'));
+const Search = lazy(() => import('./Pages/Search'));
 const Test = lazy(() => import('./Home/test'));
 
 const App = () => {
@@ -42,8 +44,11 @@ const App = () => {
           {/* Previously Protected Routes (now fully public for testing) */}
           <Route path="/home" element={<><Cards /><SwipeButtons /></>} />
           <Route path="/upload" element={<Upload />} />
-          <Route path="/video/call" element={<VideoCallComponent />} />
+          <Route path="/videos/call" element={<VideoCallComponent />} />
           <Route path="/creator/dashboard" element={<CreatorDashboard />} />
+          <Route path="/messages" element={<Messages />} />
+          <Route path="/messages/:conversationId" element={<Messages />} />
+          <Route path="/search" element={<Search />} />
 
           {/* Utility + Testing */}
           <Route path="/test" element={<Test />} />

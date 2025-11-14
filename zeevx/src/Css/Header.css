@@ -1,6 +1,7 @@
 /* Header.css
    Theme: black + sky-blue
    Responsive, accessible, production-ready
+   NOTE: All styles are scoped to .header class to prevent global interference
 */
 
 /* -- THEME VARIABLES (light + dark handled by [data-theme]) -- */
@@ -25,7 +26,7 @@
   --white: #08101a;
 }
 
-/* Base header layout */
+/* Base header layout - SCOPED */
 .header {
   height: var(--header-height);
   display: flex;

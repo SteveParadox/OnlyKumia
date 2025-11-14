@@ -1,0 +1,130 @@
+/* App.css - Global layout scoping
+   Ensures header and page layouts don't interfere
+*/
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  padding: 0;
+  background: var(--bg, #000000);
+  color: var(--white, #ffffff);
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
+    'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue',
+    sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+.App {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+  background: var(--bg, #000000);
+}
+
+/* Pages with header: header pushes content down */
+.App > header {
+  flex-shrink: 0;
+}
+
+.App > .Suspense,
+.App > div:not(header) {
+  flex: 1;
+}
+
+/* Loading screen */
+.loading-screen {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 100vh;
+  background: var(--bg, #000000);
+  color: var(--white, #ffffff);
+  font-size: 20px;
+}
+
+/* Ensure messages page, search page don't have header-related margins */
+.messages-page,
+.search-page,
+.upload-page,
+.explore-page,
+.dashboard-page,
+.video-call-page {
+  margin-top: 0;
+  padding-top: 20px;
+}
+
+/* Pages WITHOUT header should fill the viewport properly */
+.landing-page,
+.login-page,
+.signup-page,
+.error-page {
+  width: 100%;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+
+/* MUI overrides for consistency */
+.MuiPaper-root {
+  background: var(--surface, #0b0b0c) !important;
+  color: var(--white, #ffffff) !important;
+}
+
+.MuiButton-contained {
+  background: linear-gradient(135deg, #0ea5e9, #0284c7) !important;
+  color: white !important;
+}
+
+.MuiTextField-root .MuiOutlinedInput-root {
+  color: var(--white, #ffffff);
+}
+
+.MuiOutlinedInput-notchedOutline {
+  border-color: rgba(255, 255, 255, 0.1) !important;
+}
+
+.MuiCheckbox-root {
+  color: #0ea5e9 !important;
+}
+
+/* Scrollbar styling */
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: rgba(255, 255, 255, 0.02);
+}
+
+::-webkit-scrollbar-thumb {
+  background: rgba(14, 165, 233, 0.2);
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: rgba(14, 165, 233, 0.4);
+}
+
+/* Firefox scrollbar */
+* {
+  scrollbar-color: rgba(14, 165, 233, 0.2) rgba(255, 255, 255, 0.02);
+  scrollbar-width: thin;
+}
+
+/* Responsive fixes */
+@media (max-width: 768px) {
+  .App {
+    min-height: 100vh;
+  }
+
+  .loading-screen {
+    height: calc(100vh - 70px);
+  }
+}
