@@ -6,7 +6,7 @@ const Entry = () => {
   const navigate = useNavigate();
 
   return (
-    <main className="landing-root">
+    <main className="entry-page landing-root">
       {/* HERO SECTION */}
       <section className="hero" aria-labelledby="hero-title">
         <img
