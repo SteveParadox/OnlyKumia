@@ -2,8 +2,16 @@ import bcrypt from 'bcryptjs';
 import httpStatus from 'http-status';
 import ApiError from './ApiError.js';
 
-const acceptableCountries = ['nigeria'];
-const acceptableGender = ['male', 'female'];
+const acceptableCountries = [
+  'nigeria',
+  'ghana',
+  'kenya',
+  'south africa',
+  'egypt'
+];
+
+const acceptableGender = ['male', 'female', 'other', 'prefer_not_to_say'];
+
 
 /**
  * Hash a password using bcrypt

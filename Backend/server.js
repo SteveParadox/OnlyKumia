@@ -4,10 +4,11 @@ import { Server as SocketIOServer } from "socket.io";
 import mongoose from "mongoose";
 import cors from "cors";
 import dotenv from "dotenv";
-import corsOptions from "./corsConfig.js;"
+import corsOptions from "./corsConfig.js";
 
 // Routers
 import authRouter from './Routes/Login.js';
+import signupRouter from './Routes/SignUp.js'; // 
 import CardRouter from './Routes/Cards.js';
 import UploadRouter from './Routes/dataUpload.js';
 import moderationRouter from './Routes/moderation.js';
@@ -62,6 +63,7 @@ app.get('/', (req, res) => res.send("Hello World"));
 
 // Route mounts
 app.use('/auth', authRouter);
+app.use('/auth', signupRouter);
 app.use('/cards', CardRouter);
 app.use('/uploads', UploadRouter);
 app.use('/moderation', moderationRouter);
