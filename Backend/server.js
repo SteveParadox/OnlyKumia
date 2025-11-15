@@ -4,6 +4,7 @@ import { Server as SocketIOServer } from "socket.io";
 import mongoose from "mongoose";
 import cors from "cors";
 import dotenv from "dotenv";
+import corsOptions from "./corsConfig.js;"
 
 // Routers
 import authRouter from './Routes/Login.js';
@@ -40,12 +41,7 @@ setIO(io);
 
 // Middlewares
 app.use(express.json());
-app.use(cors({
-  origin: [/\.app\.github\.dev$/, 'http://localhost:3000', 'http://localhost:8001'],
-  methods: ['GET', 'POST', 'PUT', 'DELETE'],
-  allowedHeaders: ['Content-Type', 'Authorization'],
-  credentials: true
-}));
+app.use(cors(corsOptions));
 
 // Protected route example
 app.get('/api/protected-resource', authMiddleware, (req, res) => {
