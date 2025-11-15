@@ -77,60 +77,6 @@ router.post('/login', async (req, res) => {
 // =======================
 // Email/Password SignUp
 // =======================
-router.post('/signUp', limiter, botProtection, async (req, res) => {
-    try {
-        const { email, password, gender, country } = req.body;
-
-        // Validate inputs
-        const emailReg = /^[\w-\.]+@([\w-]+\.)+[\w-]{2,}$/;
-        if (!emailReg.test(email) || !password || password.length < 6) {
-            throw new ApiError("INVALID_INPUT", httpStatus.NOT_ACCEPTABLE, "Invalid email or password");
-        }
-
-        if (gender && !acceptableGender.includes(gender)) {
-            throw new ApiError("INVALID_GENDER", httpStatus.NOT_ACCEPTABLE, "Invalid gender type");
-        }
-
-        if (country && !acceptableCountries.includes(country)) {
-            throw new ApiError("INVALID_COUNTRY", httpStatus.NOT_ACCEPTABLE, "Invalid country");
-        }
-
-        // Check if user exists
-        const existing = await User.findOne({ email });
-        if (existing) throw new ApiError("ACCOUNT_EXISTS", httpStatus.CONFLICT, "Account already exists!");
-
-        const hashedPassword = await hashPassword(password);
-
-        const newUser = new User({
-            email,
-            password: hashedPassword,
-            gender,
-            country,
-            emailVerified: false
-        });
-
-        await newUser.save();
-
-        const access = await newUser.generateToken(newUser.id, newUser.email);
-        const refresh = await newUser.generateRefreshToken(access.accessToken, false);
-
-        return res.status(httpStatus.CREATED).json({
-            message: "Account created successfully",
-            data: {
-                user: newUser,
-                access,
-                refresh
-            }
-        });
-
-    } catch (error) {
-        console.error("SignUp error:", error);
-        return res.status(error.statusCode || httpStatus.BAD_REQUEST).json({
-            message: error.message || "Signup failed",
-            error
-        });
-    }
-});
 
 // =======================
 // Creator SignUp (with optional KYC document upload)

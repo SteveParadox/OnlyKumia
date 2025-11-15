@@ -4,72 +4,94 @@ import User from '../DB/User.js';
 import httpStatus from 'http-status';
 import ApiError from '../Utils/ApiError.js';
 import helper from '../Utils/helpers.js';
+import { v4 as uuidv4 } from 'uuid'; // for unique UID
 import authMiddleware from '../Auth/authMiddleware.js';
+import limiter from '../Auth/rate-limiter.js';
+
+import botProtection from '../Auth/botProtection.js';
 
 const { acceptableGender, acceptableCountries, hashPassword } = helper;
 
+// Optional: protect certain routes
 router.use('/google-login', authMiddleware);
 
-router.post('/signUp', async function (req, res) {
+router.post('/signUp', limiter, botProtection, async (req, res) => {
   try {
-    const { email, password, gender, country } = req.body;
+    const { email, password, displayName, gender, country } = req.body;
 
-    // Validate email and password
-    const emailReg = /^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$/;
-    if (!emailReg.test(email) || !password || password.length < 6) {
-      throw new ApiError("INVALID_INPUT", httpStatus.NOT_ACCEPTABLE, "Invalid email or password");
+    // Log incoming payload for debugging
+    console.log("SIGNUP PAYLOAD:", {
+      email,
+      passwordLength: password ? password.length : null,
+      displayName,
+      gender,
+      country
+    });
+
+    // 1. Required fields validation
+    if (!email || !password || !displayName) {
+      throw new ApiError("MISSING_FIELDS", httpStatus.BAD_REQUEST, "Email, password, and displayName are required", true);
     }
 
-    // Optional validations
-    if (gender && !acceptableGender.includes(gender)) {
-      throw new ApiError("INVALID_GENDER", httpStatus.NOT_ACCEPTABLE, "Invalid gender type");
+    // 2. Email format validation
+    const emailReg = /^[\w-\.]+@([\w-]+\.)+[\w-]{2,}$/;
+    if (!emailReg.test(email)) {
+      throw new ApiError("INVALID_EMAIL", httpStatus.NOT_ACCEPTABLE, "Invalid email format", true);
     }
 
-    if (country && !acceptableCountries.includes(country)) {
-      throw new ApiError("INVALID_COUNTRY", httpStatus.NOT_ACCEPTABLE, "Invalid country");
+    // 3. Password length validation
+    if (password.length < 6) {
+      throw new ApiError("INVALID_PASSWORD", httpStatus.NOT_ACCEPTABLE, "Password must be at least 6 characters", true);
     }
 
-    // Check if account already exists
-    const ifExist = await User.findOne({ email });
-    if (ifExist) {
-      throw new ApiError("ACCOUNT_EXISTS", httpStatus.CONFLICT, "Account already exists!");
+    // 4. Optional validations
+    if (gender && !acceptableGender.includes(gender.toLowerCase())) {
+      throw new ApiError("INVALID_GENDER", httpStatus.NOT_ACCEPTABLE, "Invalid gender type", true);
     }
 
-    // Hash password before saving
+    if (country && !acceptableCountries.map(c => c.toLowerCase()).includes(country.toLowerCase())) {
+      throw new ApiError("INVALID_COUNTRY", httpStatus.NOT_ACCEPTABLE, "Invalid country", true);
+    }
+
+    // 5. Check if user already exists
+    const existingUser = await User.findOne({ $or: [{ email }, { displayName }] });
+    if (existingUser) {
+      throw new ApiError("ACCOUNT_EXISTS", httpStatus.CONFLICT, "Email or displayName already in use", true);
+    }
+
+    // 6. Hash the password
     const hashedPassword = await hashPassword(password);
 
+    // 7. Create user
     const newUser = new User({
+      uid: uuidv4(),
       email,
+      displayName,
       password: hashedPassword,
-      gender,
-      country,
-      isVerified: false, // optionally set this
+      gender: gender || null,
+      country: country || null,
+      picture: '', // optional default
+      emailVerified: false
     });
 
     await newUser.save();
 
-    const access = await newUser.generateToken(newUser.id, newUser.email);
+    // 8. Generate JWTs
+    const access = await newUser.generateToken(newUser.uid, newUser.email);
     const refresh = await newUser.generateRefreshToken(access.accessToken, false);
 
-    res
-      .status(httpStatus.CREATED)
-      .send({
-        message: "Account created successfully",
-        data: {
-          user: newUser,
-          access,
-          refresh
-        }
-      });
+    // 9. Send response with filtered user data
+    res.status(httpStatus.CREATED).json({
+      message: "Account created successfully",
+      data: newUser.filterUserData(access, refresh)
+    });
 
   } catch (error) {
-    console.log(error);
-    res
-      .status(error.statusCode || httpStatus.BAD_REQUEST)
-      .send({
-        message: error.message || "Signup failed",
-        error
-      });
+    console.error("SignUp error:", error);
+    res.status(error.httpCode || httpStatus.BAD_REQUEST).json({
+      message: error.message || "Signup failed",
+      error
+    });
   }
 });
 

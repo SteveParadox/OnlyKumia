@@ -11,6 +11,7 @@ import {
   CssBaseline,
   Link,
   Box,
+  MenuItem,
 } from '@mui/material';
 import LockOutlinedIcon from '@mui/icons-material/LockOutlined';
 import GoogleIcon from '@mui/icons-material/Google';
@@ -23,9 +24,12 @@ import { useAuth } from '../Auth/Auth';
 import { useNavigate, useLocation } from 'react-router-dom';
 import axios from '../Utils/axios';
 import MicrosoftLogin from '../Auth/MicrosoftLogin';
-import '../Css/Login.css';
 
 const defaultTheme = createTheme();
+
+// Define acceptable options for gender and country
+const ACCEPTABLE_GENDERS = ['male', 'female', 'other', 'prefer_not_to_say'];
+const ACCEPTABLE_COUNTRIES = ['Nigeria', 'Ghana', 'Kenya', 'South Africa', 'Egypt']; // add more
 
 const Signup = () => {
   const { setAuth } = useAuth();
@@ -40,6 +44,7 @@ const Signup = () => {
     email: '',
     password: '',
     confirm: '',
+    displayName: '',
     country: '',
     gender: '',
     website: '', // honeypot
@@ -61,29 +66,39 @@ const Signup = () => {
 
   const handleSignup = async (e) => {
     e.preventDefault();
+
     if (form.website) {
       setErrMsg('Bot detected.');
       return;
     }
+
     if (submitDisabled) return;
     setSubmitDisabled(true);
     setTimeout(() => setSubmitDisabled(false), 5000);
 
-    const { email, password, confirm, gender, country } = form;
+    const { email, password, confirm, displayName, gender, country } = form;
 
-    if (!email || !password) {
-      setErrMsg('Email and password are required.');
+    if (!email || !password || !displayName) {
+      setErrMsg('Email, password, and display name are required.');
       return;
     }
     if (password !== confirm) {
       setErrMsg('Passwords do not match.');
       return;
     }
+    if (gender && !ACCEPTABLE_GENDERS.includes(gender)) {
+      setErrMsg('Invalid gender selected.');
+      return;
+    }
+    if (country && !ACCEPTABLE_COUNTRIES.includes(country)) {
+      setErrMsg('Invalid country selected.');
+      return;
+    }
 
     try {
       const response = await axios.post(
         '/auth/signUp',
-        { email, password, gender, country },
+        { email, password, displayName, gender, country },
         { headers: { 'Content-Type': 'application/json' }, withCredentials: true }
       );
 
@@ -155,14 +170,23 @@ const Signup = () => {
               margin="normal"
               required
               fullWidth
+              id="displayName"
+              name="displayName"
+              label="Display Name"
+              value={form.displayName}
+              onChange={handleChange}
+              inputRef={userRef}
+            />
+            <TextField
+              margin="normal"
+              required
+              fullWidth
               id="email"
               name="email"
               label="Email Address"
               autoComplete="email"
-              autoFocus
               value={form.email}
               onChange={handleChange}
-              inputRef={userRef}
             />
             <TextField
               margin="normal"
@@ -190,29 +214,43 @@ const Signup = () => {
             />
             <TextField
               margin="normal"
-              fullWidth
-              id="country"
-              name="country"
-              label="Country"
-              value={form.country}
-              onChange={handleChange}
-            />
-            <TextField
-              margin="normal"
+              select
               fullWidth
               id="gender"
               name="gender"
               label="Gender"
               value={form.gender}
               onChange={handleChange}
-            />
+            >
+              {ACCEPTABLE_GENDERS.map((g) => (
+                <MenuItem key={g} value={g}>
+                  {g.charAt(0).toUpperCase() + g.slice(1)}
+                </MenuItem>
+              ))}
+            </TextField>
+            <TextField
+              margin="normal"
+              select
+              fullWidth
+              id="country"
+              name="country"
+              label="Country"
+              value={form.country}
+              onChange={handleChange}
+            >
+              {ACCEPTABLE_COUNTRIES.map((c) => (
+                <MenuItem key={c} value={c}>
+                  {c}
+                </MenuItem>
+              ))}
+            </TextField>
 
             <FormControlLabel
               control={<Checkbox required color="primary" />}
               label="I agree to terms and conditions"
             />
 
-            {/* Hidden honeypot input */}
+            {/* Hidden honeypot */}
             <input
               type="text"
               name="website"
