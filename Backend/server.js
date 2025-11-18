@@ -6,9 +6,13 @@ import cors from "cors";
 import dotenv from "dotenv";
 import corsOptions from "./corsConfig.js";
 
+// Config
+import sessionMiddleware from "./config/sessionConfig.js";
+import "./config/firebaseAdmin.js"; // initializes Firebase admin
+
 // Routers
 import authRouter from './Routes/Login.js';
-import signupRouter from './Routes/SignUp.js'; // 
+import signupRouter from './Routes/SignUp.js';
 import CardRouter from './Routes/Cards.js';
 import UploadRouter from './Routes/dataUpload.js';
 import moderationRouter from './Routes/moderation.js';
@@ -25,26 +29,32 @@ import authMiddleware from './Auth/authMiddleware.js';
 
 dotenv.config();
 
-// App config
 const app = express();
-app.set("trust proxy", 1); // Fix for express-rate-limit warnings behind proxies
+app.set("trust proxy", 1); // behind proxy fix
 
 const port = process.env.PORT || 8001;
-const uri = process.env.DB_URI;
+const mongoUri = process.env.DB_URI;
 const server = http.createServer(app);
 
 const io = new SocketIOServer(server, {
   cors: { origin: "*" }
 });
-
-// Pass Socket.IO instance to messages router
-setIO(io);
+setIO(io); // pass Socket.IO to messages router
 
 // Middlewares
 app.use(express.json());
 app.use(cors(corsOptions));
+app.use(sessionMiddleware);
 
-// Protected route example
+// MongoDB connection
+mongoose.connect(mongoUri)
+  .then(() => console.log("✅ MongoDB connected"))
+  .catch(err => console.error("❌ MongoDB connection error:", err));
+
+// API Endpoint example
+app.get('/', (req, res) => res.send("Hello World"));
+
+// Protected example
 app.get('/api/protected-resource', authMiddleware, (req, res) => {
   const { uid, email, displayName } = req.user || {};
   res.json({
@@ -52,14 +62,6 @@ app.get('/api/protected-resource', authMiddleware, (req, res) => {
     user: { uid, email, displayName }
   });
 });
-
-// MongoDB connection
-mongoose.connect(uri)
-  .then(() => console.log("MongoDB connected"))
-  .catch(err => console.error("MongoDB connection error:", err));
-
-// API Endpoint
-app.get('/', (req, res) => res.send("Hello World"));
 
 // Route mounts
 app.use('/auth', authRouter);
@@ -75,7 +77,9 @@ app.use('/search', searchRouter);
 app.use('/admin', adminRouter);
 app.use('/export', exportRouter);
 
-// Socket.IO events
+// -------------------
+// SOCKET.IO EVENTS
+// -------------------
 io.on("connection", (socket) => {
   console.log(`[WS] User connected: ${socket.id}`);
 
@@ -116,4 +120,5 @@ io.on("connection", (socket) => {
   socket.on("conversation:join", ({ conversationId }) => conversationId && socket.join(`conversation_${conversationId}`));
 });
 
-server.listen(port, () => console.log(`[Server] WebSocket server initialized on port ${port}`));
+// Start server
+server.listen(port, () => console.log(`[Server] WebSocket server running on port ${port}`));
